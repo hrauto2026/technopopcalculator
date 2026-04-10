@@ -40,8 +40,8 @@
             --btn-num: #333;
             --btn-op: #222;
             --btn-special: #000;
-            --btn-font-color: #ff3333; /* High contrast for Stealth */
-            --model-color: #ff0000; /* High contrast for Stealth */
+            --btn-font-color: #ff3333; 
+            --model-color: #ff0000; 
             --accent-orange: #ff0000;
         }
 
@@ -216,9 +216,9 @@
         }
 
         .modal-scroll { overflow-y: auto; flex-grow: 1; padding-right: 10px; }
-        textarea { width: 100%; height: 120px; border-radius: 8px; padding: 10px; margin: 15px 0; font-family: monospace; font-size: 16px; }
+        textarea { width: 100%; height: 120px; border-radius: 8px; padding: 10px; margin: 15px 0; font-family: monospace; font-size: 16px; background: #222; color: #fff; border: 1px solid #444; }
         .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;}
-        .btn-dialog { background: #555; color: white; padding: 15px; border-radius: 8px; font-weight: bold; border: none; font-size: 12px; }
+        .btn-dialog { background: #555; color: white; padding: 15px; border-radius: 8px; font-weight: bold; border: none; font-size: 12px; cursor: pointer; }
 
         .manual-text { font-size: 13px; line-height: 1.6; color: #ccc; }
     </style>
@@ -278,11 +278,12 @@
 
     <div id="modal-io" class="modal">
         <h3>Memory Data Transfer</h3>
-        <textarea id="io-textarea"></textarea>
+        <p style="font-size: 11px; opacity: 0.7; margin-top: -10px;">Edit sequence below (0-9, +, -, x, /, .)</p>
+        <textarea id="io-textarea" placeholder="Paste or type sequence..."></textarea>
         <div class="modal-btns">
             <button class="btn-dialog" onclick="copyToClipboard()">COPY</button>
             <button class="btn-dialog" onclick="pasteFromClipboard()">PASTE</button>
-            <button class="btn-dialog" onclick="importSequence()">IMPORT</button>
+            <button class="btn-dialog" onclick="importSequence()" style="background: var(--shocking-green); color: #000;">IMPORT</button>
             <button class="btn-dialog" onclick="clearAll(); closeModals();" style="background:#900">Del Rec</button>
         </div>
         <button class="btn-dialog" onclick="closeModals()" style="width:100%">CLOSE</button>
@@ -332,7 +333,7 @@
             isRecording: false,
             isPlaying: false,
             memory: [],
-            liveBuffer: "", // Tracks sequence during music pressing mode
+            liveBuffer: "", 
             calcInput: "",
             speed: 2,
             maxMem: 200,
@@ -375,7 +376,6 @@
                         lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`;
                     }
                 } else {
-                    // Update Live Sequence Buffer
                     state.liveBuffer += key;
                     lcd.innerText = state.liveBuffer.slice(-12);
                 }
@@ -490,15 +490,39 @@
         function toggleTheme() { state.themeIdx = (state.themeIdx + 1) % state.themes.length; document.body.setAttribute('data-theme', state.themes[state.themeIdx]); }
         function undoLast() { if (state.isRecording && state.memory.length > 0) { state.memory.pop(); lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`; updateMemIndicator(); } else { state.liveBuffer = state.liveBuffer.slice(0, -1); lcd.innerText = state.liveBuffer.slice(-12) || "READY"; } }
         function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.5, 2, 3]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
-        function showIO() { document.getElementById('modal-io').style.display = 'flex'; document.getElementById('io-textarea').value = state.memory.join(''); }
+        
+        // UPDATED IO FUNCTIONS
+        function showIO() { 
+            document.getElementById('modal-io').style.display = 'flex'; 
+            document.getElementById('io-textarea').value = state.memory.join(''); 
+        }
+        
+        function importSequence() { 
+            let val = document.getElementById('io-textarea').value; 
+            // Allow 'x' to be used as '*' for manual typing
+            val = val.replace(/x/g, '*');
+            const valid = Object.keys(frequencies).concat(['.']); 
+            state.memory = val.split('').filter(c => valid.includes(c)).slice(0, state.maxMem); 
+            lcd.innerText = "LOADED " + state.memory.length; 
+            updateMemIndicator(); 
+            setTimeout(() => {
+                closeModals(); 
+                lcd.innerText = "READY";
+            }, 800);
+        }
+
         function showHowTo() { document.getElementById('modal-how').style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         function copyToClipboard() { const txt = document.getElementById('io-textarea'); txt.select(); document.execCommand('copy'); }
         async function pasteFromClipboard() { try { const text = await navigator.clipboard.readText(); document.getElementById('io-textarea').value = text; } catch (err) {} }
-        function importSequence() { const val = document.getElementById('io-textarea').value; const valid = Object.keys(frequencies).concat(['.']); state.memory = val.split('').filter(c => valid.includes(c)).slice(0, state.maxMem); lcd.innerText = "LOADED " + state.memory.length; updateMemIndicator(); closeModals(); }
 
+        // UPDATED KEYBOARD LISTENER (Allows typing in Textarea)
         window.addEventListener('keydown', (e) => {
             if (state.isPlaying) return;
+            
+            // Allow normal typing if focus is on the IO textarea
+            if (e.target.tagName === 'TEXTAREA') return;
+
             let key = e.key;
             if ((key >= '0' && key <= '9') || ['+', '-', '*', '/', '.', 'Enter'].includes(key)) {
                 e.preventDefault();
@@ -509,5 +533,8 @@
             }
         });
     </script>
+<script data-goatcounter="https://musiccalculator.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
 </body>
 </html>
