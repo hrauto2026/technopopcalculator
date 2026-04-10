@@ -20,7 +20,8 @@
             --btn-font-color: #333;
             --model-color: #555;
             --accent-orange: #ff6600;
-            --mode-btn-bg: #ffffcc; 
+            --mode-btn-bg: #ffffcc;
+            --sakura-pink: #FFB7C5; 
             --shocking-green: #39FF14;
         }
 
@@ -195,8 +196,8 @@
         .btn-op { background: var(--btn-op); height: 100%; }
         
         .sparkle-active {
-            background: var(--shocking-green) !important;
-            box-shadow: 0 0 20px var(--shocking-green), 0 0 40px var(--shocking-green);
+            background: var(--sakura-pink) !important;
+            box-shadow: 0 0 20px var(--sakura-pink), 0 0 40px var(--sakura-pink);
             transform: scale(1.1) translateY(-2px);
             filter: none !important;
             opacity: 1 !important;
@@ -271,7 +272,7 @@
             <button class="btn-num control-btn" data-key="4" onclick="handleInput('4')"><span class="btn-text">4</span><span class="solfege">fa</span></button>
             <button class="btn-num control-btn" data-key="5" onclick="handleInput('5')"><span class="btn-text">5</span><span class="solfege">sol</span></button>
             <button class="btn-num control-btn" data-key="6" onclick="handleInput('6')"><span class="btn-text">6</span><span class="solfege">la</span></button>
-            <button class="btn-op control-btn" data-key="*" onclick="handleInput('*')"><span class="btn-text">x</span><span class="solfege">fa²</span></button>
+            <button class="btn-op control-btn" data-key="*" onclick="handleInput('*')"><span class="btn-text">*</span><span class="solfege">fa²</span></button>
 
             <button class="btn-num control-btn" data-key="1" onclick="handleInput('1')"><span class="btn-text">1</span><span class="solfege">do</span></button>
             <button class="btn-num control-btn" data-key="2" onclick="handleInput('2')"><span class="btn-text">2</span><span class="solfege">re</span></button>
@@ -395,7 +396,7 @@
                     </section>
                 </div>
 
-                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP INDUSTRIES / RS2026</footer>
+                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP Calculator Version01 / RS2026 / <a href="https://www.threads.com/@cheaplad60" style="color: #ff6600;"target="_blank">Cheaplad's Threads</a></footer>
             </div>
         </div>
         <button class="btn-dialog" onclick="closeModals()" style="width:100%; margin-top:20px; background: var(--accent-orange); color: #000;">CLOSE / 關閉</button>
@@ -417,7 +418,7 @@
             liveBuffer: "", 
             calcInput: "",
             speed: 2,
-            maxMem: 200,
+            maxMem: 500,
             themes: ['retro', 'city-pop', 'stealth'],
             themeIdx: 0
         };
@@ -633,7 +634,7 @@
             }
         }
 
-        function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.5, 2, 3]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
+        function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
         
         function showIO() { 
             if (!state.isMusic) return;
