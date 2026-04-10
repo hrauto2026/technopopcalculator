@@ -53,19 +53,20 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        body {
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: 100vw;
-            font-family: Arial, sans-serif;
-            overflow: hidden; /* Prevents bouncing/scrolling */
-            position: fixed; /* Locks the app in place */
-        }
+body {
+    /* Change this from --bg-color to --case-bg */
+    background-color: var(--case-bg); 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    font-family: Arial, sans-serif;
+    overflow: hidden; 
+    position: fixed; 
+}
 
         #viewport {
             width: 100%;
