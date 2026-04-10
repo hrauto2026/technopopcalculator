@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Technopop Synth-Calc RS-2026A</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <style>
         :root {
+            /* Retro Theme (Default) */
             --bg-color: #121212;
             --case-bg: #d4d4d2;
             --lcd-bg: #a3ad91;
@@ -51,74 +48,194 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--case-bg);
-            margin: 0; padding: 0;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; width: 100vw;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
-            overflow: hidden; position: fixed;
+            transition: background 0.3s;
         }
 
         #viewport {
-            width: 100%; height: 100%; 
+            width: 360px;
+            height: 780px; 
             background: var(--case-bg);
-            padding: calc(15px + env(safe-area-inset-top)) 20px calc(5px + env(safe-area-inset-bottom)) 20px;
-            display: flex; flex-direction: column;
-            position: relative; transition: background 0.3s;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #333;
         }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0; }
-        .header-label { font-weight: bold; color: var(--accent-orange); font-size: 14px; text-transform: uppercase; }
-        .model-number { font-weight: bold; color: var(--model-color); font-size: 14px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .header-label {
+            font-weight: bold;
+            color: var(--accent-orange);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .model-number {
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            color: var(--model-color);
+            font-size: 14px;
+        }
 
         #lcd-container {
             background-color: var(--lcd-bg);
-            height: 18vh; min-height: 90px;
-            border: 4px solid #333; border-radius: 12px;
-            margin-bottom: 15px; display: flex; flex-direction: column;
-            justify-content: center; padding: 0 15px;
+            height: 100px;
+            border: 5px solid #333;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 15px;
             box-shadow: inset 3px 3px 10px rgba(0,0,0,0.4);
-            position: relative; flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
 
-        #lcd-mem { position: absolute; top: 5px; left: 10px; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; color: var(--lcd-text); visibility: hidden; }
-        #lcd-mode-marker { position: absolute; bottom: 5px; left: 10px; font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; text-transform: uppercase; color: var(--lcd-text); opacity: 0.7; }
-        #lcd-main { text-align: right; font-family: 'Courier New', monospace; font-size: 32px; font-weight: bold; color: var(--lcd-text); white-space: nowrap; }
+        #lcd-mem {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--lcd-text);
+            visibility: hidden;
+        }
 
-        .util-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; flex-shrink: 0; }
-        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-grow: 1; margin-bottom: 15px; }
+        #lcd-mode-marker {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--lcd-text);
+            opacity: 0.7;
+        }
+
+        #lcd-main {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--lcd-text);
+            white-space: nowrap;
+        }
+
+        .util-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            flex-grow: 1;
+        }
 
         button {
-            border: none; border-radius: 12px; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 4px #999; transition: all 0.05s; position: relative; user-select: none; width: 100%;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px #999;
+            transition: all 0.05s;
+            position: relative;
+            user-select: none;
         }
 
-        button:active:not(:disabled) { box-shadow: 0 1px #999; transform: translateY(3px); }
-        .btn-text { font-size: 18px; font-weight: bold; color: var(--btn-font-color); }
-        .solfege { font-size: 10px; text-transform: lowercase; margin-top: 2px; color: var(--btn-font-color); font-weight: bold; opacity: 0.7; }
-        .btn-util { background: var(--btn-special); color: white; font-size: 10px; font-weight: bold; box-shadow: 0 4px #222; height: 45px; }
+        button:active:not(:disabled) {
+            box-shadow: 0 1px #999;
+            transform: translateY(4px);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .btn-text { font-size: 24px; font-weight: bold; color: var(--btn-font-color); }
+        .solfege { font-size: 13px; text-transform: lowercase; margin-top: 2px; color: var(--btn-font-color); font-weight: bold; opacity: 0.7; }
+
+        .btn-util { background: var(--btn-special); color: white; height: 50px; font-size: 10px; font-weight: bold; box-shadow: 0 4px #222; }
         #mode-btn { background: var(--mode-btn-bg) !important; color: #333 !important; box-shadow: 0 4px #b2b28f; }
-        .btn-num { background: var(--btn-num); }
-        .btn-op { background: var(--btn-op); }
         
-        .footer { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; height: 50px; flex-shrink: 0; margin-bottom: env(safe-area-inset-bottom); }
-        .btn-footer { color: white; font-weight: bold; border-radius: 15px; font-size: 11px; box-shadow: 0 4px #444; }
-        .btn-how { background: #333; }
-        .btn-special-key { background: #bbb; color: #333; box-shadow: 0 4px #777; border: 2px solid #555; }
-
-        .modal {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 100; padding: calc(40px + env(safe-area-inset-top)) 25px 40px 25px;
-            color: white; flex-direction: column;
+        .btn-num { background: var(--btn-num); height: 100%; }
+        .btn-op { background: var(--btn-op); height: 100%; }
+        
+        .sparkle-active {
+            background: var(--shocking-green) !important;
+            box-shadow: 0 0 20px var(--shocking-green), 0 0 40px var(--shocking-green);
+            transform: scale(1.1) translateY(-2px);
+            filter: none !important;
+            opacity: 1 !important;
+            z-index: 10;
+        }
+        
+        .sparkle-active .btn-text, .sparkle-active .solfege {
+            color: #000 !important;
         }
 
-        .sparkle-active { background: var(--shocking-green) !important; box-shadow: 0 0 20px var(--shocking-green); transform: scale(1.05); z-index: 10; }
         .rec-active { color: #ff3b30 !important; }
         .play-active { color: #4cd964 !important; }
+
+        .footer {
+            margin-top: 20px;
+            padding-bottom: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-footer { height: 50px; color: white; font-weight: bold; border-radius: 15px; font-size: 11px; }
+        .btn-how { background: #333; }
+        .btn-special-key { background: #bbb; color: #333; box-shadow: 0 5px #777; border: 2px solid #555; }
+
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            padding: 40px 25px;
+            color: white;
+            flex-direction: column;
+        }
+
+        .modal-scroll { overflow-y: auto; flex-grow: 1; padding-right: 10px; }
+        textarea { width: 100%; height: 120px; border-radius: 8px; padding: 10px; margin: 15px 0; font-family: monospace; font-size: 16px; background: #222; color: #fff; border: 1px solid #444; }
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;}
+        .btn-dialog { background: #555; color: white; padding: 15px; border-radius: 8px; font-weight: bold; border: none; font-size: 12px; cursor: pointer; }
+
+        .manual-text { font-size: 13px; line-height: 1.6; color: #ccc; }
     </style>
 </head>
-<body>
+<body data-theme="retro">
 
     <div id="viewport">
         <div class="header">
@@ -157,11 +274,11 @@
 
             <button class="btn-num control-btn" data-key="0" onclick="handleInput('0')"><span class="btn-text">0</span><span class="solfege">ti²</span></button>
             <button class="btn-num control-btn" data-key="." onclick="handleInput('.')"><span class="btn-text">.</span><span class="solfege" style="color:#cc0000">mute</span></button>
-            <button class="btn-op mode-dep control-btn" onclick="cycleSpeed()" id="spd-btn"><span class="btn-text" style="font-size:16px">2x</span><span class="solfege">Speed</span></button>
+            <button class="btn-op mode-dep control-btn" onclick="cycleSpeed()" id="spd-btn"><span class="btn-text" style="font-size:18px">2x</span><span class="solfege">Speed</span></button>
             <button class="btn-op control-btn" data-key="+" onclick="handleInput('+')"><span class="btn-text">+</span><span class="solfege">la²</span></button>
 
             <button class="btn-op control-btn" onclick="undoLast()" style="background:#bbb"><span class="btn-text" style="font-size:11px">RETURN</span></button>
-            <button class="btn-num control-btn" id="ac-del-btn" onclick="clearAll()" style="background:#eee"><span class="btn-text" style="font-size:11px">Del Rec</span></button>
+            <button class="btn-num control-btn" id="ac-del-btn" onclick="clearAll()" style="background:#eee"><span class="btn-text" style="font-size:12px">Del Rec</span></button>
             <button class="btn-op control-btn" data-key="Enter" onclick="handleInput('=')" style="background:#bbb"><span class="btn-text">=</span><span class="solfege">do³</span></button>
             <button class="btn-op control-btn" id="io-btn" onclick="showIO()" style="background:#bbb"><span class="btn-text" style="font-size:14px">IO</span></button>
         </div>
@@ -174,12 +291,47 @@
 
     <div id="modal-io" class="modal">
         <h3>Memory Data Transfer</h3>
-        <textarea id="io-textarea" placeholder="Sequence..."></textarea>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="btn-util" onclick="copyToClipboard()">COPY</button>
-            <button class="btn-util" onclick="importSequence()">IMPORT</button>
+        <p style="font-size: 11px; opacity: 0.7; margin-top: -10px;">Edit sequence below (0-9, +, -, x, /, .)</p>
+        <textarea id="io-textarea" placeholder="Paste or type sequence..."></textarea>
+        <div class="modal-btns">
+            <button class="btn-dialog" onclick="copyToClipboard()">COPY</button>
+            <button class="btn-dialog" onclick="pasteFromClipboard()">PASTE</button>
+            <button class="btn-dialog" onclick="importSequence()" style="background: var(--shocking-green); color: #000;">IMPORT</button>
+            <button class="btn-dialog" onclick="clearAll(); closeModals();" style="background:#900">Del Rec</button>
         </div>
-        <button class="btn-util" onclick="closeModals()" style="width:100%; margin-top:20px;">CLOSE</button>
+        <button class="btn-dialog" onclick="closeModals()" style="width:100%">CLOSE</button>
+    </div>
+
+    <div id="modal-how" class="modal">
+        <div class="modal-scroll">
+            <header style="text-align: center; border-bottom: 2px solid var(--accent-orange); padding-bottom: 10px; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 20px; letter-spacing: 2px;">RS-2026A</h2>
+                <small style="color: var(--accent-orange); font-weight: bold;">OPERATING MANUAL</small>
+            </header>
+            <div class="manual-text">
+                <p style="font-style: italic; margin-bottom: 20px; opacity: 0.8;">Dear Customer, Thank you for using RS-2026A. Please read these instructions carefully.</p>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <section>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. Mode Selection</strong>
+                        <p style="margin: 0;">Toggle between <strong>Calculation</strong> and <strong>Music</strong> modes using the light-yellow button. Note that the display marker will track your current mode.</p>
+                    </section>
+                    <section>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. Universal Synthesis</strong>
+                        <p style="margin: 0;">This unit maintains square-wave audio feedback in both modes. Calculations are audible.</p>
+                    </section>
+                    <section style="border: 1px solid #444; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.05);">
+                        <strong style="display: block; color: var(--shocking-green); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. Memory & Reset</strong>
+                        <p style="margin: 0;">In Music mode, use <strong>[Del Rec]</strong>. In Calculator mode, this becomes the <strong>[AC]</strong> function for clearing registers.</p>
+                    </section>
+                    <section>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. Return Key</strong>
+                        <p style="margin: 0;">The <strong>[RETURN]</strong> key performs a standard backspace on the current active input digit or musical note.</p>
+                    </section>
+                </div>
+                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP INDUSTRIES / RS2026</footer>
+            </div>
+        </div>
+        <button class="btn-dialog" onclick="closeModals()" style="width:100%; margin-top:20px; background: var(--accent-orange); color: #000;">EXIT MANUAL</button>
     </div>
 
     <script>
@@ -190,15 +342,26 @@
         };
 
         let state = {
-            isMusic: true, isRecording: false, isPlaying: false, isResultDisplayed: false,
-            memory: [], liveBuffer: "", calcInput: "", speed: 2, maxMem: 200,
-            themes: ['retro', 'city-pop', 'stealth'], themeIdx: 0
+            isMusic: true,
+            isRecording: false,
+            isPlaying: false,
+            isResultDisplayed: false,
+            memory: [],
+            liveBuffer: "", 
+            calcInput: "",
+            speed: 2,
+            maxMem: 200,
+            themes: ['retro', 'city-pop', 'stealth'],
+            themeIdx: 0
         };
 
         const lcd = document.getElementById('lcd-main');
         const memIndicator = document.getElementById('lcd-mem');
+        const modeMarker = document.getElementById('lcd-mode-marker');
 
-        function updateMemIndicator() { memIndicator.style.visibility = state.memory.length > 0 ? 'visible' : 'hidden'; }
+        function updateMemIndicator() {
+            memIndicator.style.visibility = state.memory.length > 0 ? 'visible' : 'hidden';
+        }
 
         function playNote(char) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -210,85 +373,232 @@
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-        }
-
-        async function playSpecial() {
-            if (state.isPlaying || !state.isMusic) return;
-            state.isPlaying = true;
-            disableAllButtons(true);
-            
-            const sequence = "4599.845887..4599.845887.6..4599.845887..4599.845887.6..44284.44284.44284.44284.";
-            const lyrics = "BY PRESSING DOWN A SPECIAL KEY - IT PLAYS A LITTLE MELODY ";
-            const delay = 400 / 1.5; // Your 1.5x Speed Requirement
-            
-            let lyricIdx = 0;
-            const ticker = setInterval(() => {
-                lcd.innerText = (lyrics + "            ").substring(lyricIdx, lyricIdx + 12);
-                lyricIdx = (lyricIdx + 1) % lyrics.length;
-            }, 150);
-
-            for (let char of sequence) {
-                if (!state.isPlaying) break;
-                if (char !== '.') {
-                    playNote(char);
-                    const btn = document.querySelector(`button[data-key="${char}"]`);
-                    if (btn) { btn.classList.add('sparkle-active'); setTimeout(() => btn.classList.remove('sparkle-active'), delay - 50); }
-                }
-                await new Promise(r => setTimeout(r, delay));
-            }
-
-            clearInterval(ticker);
-            state.isPlaying = false;
-            disableAllButtons(false);
-            lcd.innerText = "READY";
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
         }
 
         function handleInput(key) {
             if (state.isPlaying) return;
+
+            // Synthesis sound plays for EVERY key in both modes
             const noteVal = key === 'Enter' ? '=' : key;
             if (key !== '.') playNote(noteVal);
+
             if (state.isMusic) {
                 if (state.isRecording) {
-                    state.memory.push(key);
-                    lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`;
+                    if (state.memory.length < state.maxMem) {
+                        state.memory.push(key);
+                        lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`;
+                    }
                 } else {
                     state.liveBuffer += key;
                     lcd.innerText = state.liveBuffer.slice(-12);
                 }
                 updateMemIndicator();
             } else {
+                // Calculator Logic
+                const digits = ['0','1','2','3','4','5','6','7','8','9','.'];
+                const operators = ['+', '-', '*', '/', 'x'];
+
                 if (key === '=' || key === 'Enter') {
-                    try { lcd.innerText = eval(state.calcInput.replace(/x/g, '*')); state.isResultDisplayed = true; }
-                    catch { lcd.innerText = "ERROR"; }
-                    state.calcInput = "";
-                } else {
-                    if (state.isResultDisplayed) { state.calcInput = key; state.isResultDisplayed = false; }
-                    else { state.calcInput += key; }
+                    try { 
+                        let raw = eval(state.calcInput.replace(/x/g, '*'));
+                        state.calcInput = parseFloat(raw.toFixed(10)).toString(); 
+                        lcd.innerText = state.calcInput; 
+                        state.isResultDisplayed = true;
+                    }
+                    catch { lcd.innerText = "ERROR"; state.calcInput = ""; }
+                } 
+                else if (digits.includes(key)) {
+                    // Start fresh if a result was just shown
+                    if (state.isResultDisplayed) {
+                        state.calcInput = key;
+                        state.isResultDisplayed = false;
+                    } else {
+                        state.calcInput += key;
+                    }
+                    lcd.innerText = state.calcInput.slice(-12);
+                }
+                else if (operators.includes(key)) {
+                    // Continue from result if operator is pressed
+                    state.isResultDisplayed = false;
+                    state.calcInput += key;
                     lcd.innerText = state.calcInput.slice(-12);
                 }
             }
         }
 
-        function toggleTheme() { 
-            state.themeIdx = (state.themeIdx + 1) % state.themes.length; 
-            const newTheme = state.themes[state.themeIdx];
-            document.body.setAttribute('data-theme', newTheme);
-            const caseColor = getComputedStyle(document.documentElement).getPropertyValue('--case-bg');
-            document.body.style.backgroundColor = caseColor;
+        function setButtonsState(disabled) {
+            const allButtons = document.querySelectorAll('button:not(#play-btn)');
+            allButtons.forEach(btn => btn.disabled = disabled);
         }
 
-        function disableAllButtons(disabled) { document.querySelectorAll('button:not(#special-btn)').forEach(b => b.disabled = disabled); }
-        function toggleMode() { state.isMusic = !state.isMusic; document.getElementById('mode-btn').innerText = state.isMusic ? "CALC" : "MUSIC"; clearAll(); }
-        function clearAll() { state.calcInput = ""; state.memory = []; lcd.innerText = "READY"; updateMemIndicator(); }
-        function undoLast() { if(state.isMusic) state.memory.pop(); else state.calcInput = state.calcInput.slice(0,-1); lcd.innerText = "READY"; updateMemIndicator(); }
+        async function playSpecial() {
+            if (state.isPlaying || !state.isMusic) return;
+            state.isPlaying = true;
+            setButtonsState(true);
+
+            const sequence = "4599.845887..4599.845887.6..4599.845887..4599.845887.6..44284.44284.44284.44284...........";
+            const lyrics = "By pressing down a special key - It plays a little melody ";
+            const fullLyrics = (lyrics + " - " + lyrics).toUpperCase();
+            let lyricIdx = 0;
+            const delay = 150;
+
+            const ticker = setInterval(() => {
+                const display = (fullLyrics + "          ").substring(lyricIdx, lyricIdx + 12);
+                lcd.innerText = display;
+                lyricIdx++;
+                if (lyricIdx > fullLyrics.length) lyricIdx = 0;
+            }, 180);
+
+            for (let char of sequence) {
+                if (char !== '.') {
+                    playNote(char);
+                    const btn = document.querySelector(`button[data-key="${char}"]`);
+                    if (btn) {
+                        btn.classList.add('sparkle-active');
+                        setTimeout(() => btn.classList.remove('sparkle-active'), delay - 20);
+                    }
+                }
+                await new Promise(r => setTimeout(r, delay));
+            }
+
+            clearInterval(ticker);
+            state.isPlaying = false;
+            setButtonsState(false);
+            lcd.innerText = "READY";
+        }
+
+        async function playSequence() {
+            if (!state.isMusic || state.memory.length === 0) return;
+            if (state.isPlaying) { state.isPlaying = false; return; }
+            state.isPlaying = true;
+            document.getElementById('play-btn').classList.add('play-active');
+            setButtonsState(true);
+            const delay = 400 / state.speed;
+
+            for (let i = 0; i < state.memory.length; i++) {
+                if (!state.isPlaying) break;
+                const char = state.memory[i];
+                lcd.innerText = `P ${i+1}/${state.memory.length}`;
+                const visualChar = char === 'Enter' ? '=' : char;
+                const btn = document.querySelector(`button[data-key="${visualChar}"]`);
+                if (btn) btn.classList.add('sparkle-active');
+                if (char !== '.') playNote(char);
+                await new Promise(r => setTimeout(r, delay));
+                if (btn) btn.classList.remove('sparkle-active');
+            }
+
+            state.isPlaying = false;
+            document.getElementById('play-btn').classList.remove('play-active');
+            setButtonsState(false);
+            lcd.innerText = "READY";
+        }
+
+        function toggleRecord() { 
+            if (!state.isMusic) return; 
+            state.isRecording = !state.isRecording; 
+            const btn = document.getElementById('rec-btn'); 
+            if (state.isRecording) { 
+                state.memory = []; 
+                state.liveBuffer = "";
+                btn.classList.add('rec-active'); 
+                lcd.innerText = "REC [0]"; 
+            } else { 
+                btn.classList.remove('rec-active'); 
+                lcd.innerText = "SAVED"; 
+            } 
+            updateMemIndicator(); 
+        }
+
+        function clearAll() { 
+            state.calcInput = ""; 
+            state.memory = []; 
+            state.liveBuffer = "";
+            state.isResultDisplayed = false;
+            lcd.innerText = state.isMusic ? "READY" : "0"; 
+            updateMemIndicator(); 
+        }
+
+        function toggleMode() { 
+            state.isMusic = !state.isMusic; 
+            state.liveBuffer = "";
+            state.isResultDisplayed = false;
+            
+            // UI Updates
+            document.getElementById('mode-btn').innerText = state.isMusic ? "CALC" : "MUSIC"; 
+            modeMarker.innerText = state.isMusic ? "Music Mode" : "Calculator Mode";
+            document.getElementById('ac-del-btn').querySelector('span').innerText = state.isMusic ? "Del Rec" : "AC";
+            
+            // Enable/Disable buttons based on mode
+            document.querySelectorAll('.mode-dep').forEach(btn => btn.disabled = !state.isMusic); 
+            document.getElementById('io-btn').disabled = !state.isMusic;
+            document.getElementById('special-btn').disabled = !state.isMusic;
+
+            clearAll(); 
+        }
+
+        function toggleTheme() { state.themeIdx = (state.themeIdx + 1) % state.themes.length; document.body.setAttribute('data-theme', state.themes[state.themeIdx]); }
+        
+        function undoLast() { 
+            if (state.isMusic) {
+                if (state.isRecording && state.memory.length > 0) { 
+                    state.memory.pop(); 
+                    lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`; 
+                } else { 
+                    state.liveBuffer = state.liveBuffer.slice(0, -1); 
+                    lcd.innerText = state.liveBuffer.slice(-12) || "READY"; 
+                } 
+                updateMemIndicator();
+            } else {
+                // Calculator backspace
+                state.calcInput = state.calcInput.toString().slice(0, -1);
+                lcd.innerText = state.calcInput || "0";
+                state.isResultDisplayed = false;
+            }
+        }
+
+        function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.5, 2, 3]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
+        
+        function showIO() { 
+            if (!state.isMusic) return;
+            document.getElementById('modal-io').style.display = 'flex'; 
+            document.getElementById('io-textarea').value = state.memory.join(''); 
+        }
+        
+        function importSequence() { 
+            let val = document.getElementById('io-textarea').value; 
+            val = val.replace(/x/g, '*');
+            const valid = Object.keys(frequencies).concat(['.']); 
+            state.memory = val.split('').filter(c => valid.includes(c)).slice(0, state.maxMem); 
+            lcd.innerText = "LOADED " + state.memory.length; 
+            updateMemIndicator(); 
+            setTimeout(() => {
+                closeModals(); 
+                lcd.innerText = "READY";
+            }, 800);
+        }
+
+        function showHowTo() { document.getElementById('modal-how').style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-        function showIO() { document.getElementById('modal-io').style.display = 'flex'; }
-        function showHowTo() { alert("Technopop RS-2026A: Press keys to synthesize sound. Use REC to save melodies."); }
-        function cycleSpeed() { state.speed = state.speed === 2 ? 1 : 2; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
-        function toggleRecord() { state.isRecording = !state.isRecording; document.getElementById('rec-btn').classList.toggle('rec-active'); }
-        async function playSequence() { /* Standard play logic same as before */ }
+        function copyToClipboard() { const txt = document.getElementById('io-textarea'); txt.select(); document.execCommand('copy'); }
+        async function pasteFromClipboard() { try { const text = await navigator.clipboard.readText(); document.getElementById('io-textarea').value = text; } catch (err) {} }
+
+        window.addEventListener('keydown', (e) => {
+            if (state.isPlaying) return;
+            if (e.target.tagName === 'TEXTAREA') return;
+
+            let key = e.key;
+            if ((key >= '0' && key <= '9') || ['+', '-', '*', '/', '.', 'Enter'].includes(key)) {
+                e.preventDefault();
+                handleInput(key === 'Enter' ? '=' : key);
+            } else if (key === 'Backspace') { 
+                e.preventDefault();
+                undoLast(); 
+            }
+        });
     </script>
 <script data-goatcounter="https://musiccalculator.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
