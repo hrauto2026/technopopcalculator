@@ -382,7 +382,12 @@
                 updateMemIndicator();
             } else {
                 if (key === '=' || key === 'Enter') {
-                    try { state.calcInput = eval(state.calcInput.replace('x', '*')).toString(); lcd.innerText = state.calcInput; }
+                    try { 
+                        // Evaluation with precision fix for 2.01 * 3 style floating point bugs
+                        let raw = eval(state.calcInput.replace('x', '*'));
+                        state.calcInput = parseFloat(raw.toFixed(10)).toString(); 
+                        lcd.innerText = state.calcInput; 
+                    }
                     catch { lcd.innerText = "ERROR"; state.calcInput = ""; }
                 } else { state.calcInput += key; lcd.innerText = state.calcInput.slice(-12); }
             }
@@ -491,7 +496,6 @@
         function undoLast() { if (state.isRecording && state.memory.length > 0) { state.memory.pop(); lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`; updateMemIndicator(); } else { state.liveBuffer = state.liveBuffer.slice(0, -1); lcd.innerText = state.liveBuffer.slice(-12) || "READY"; } }
         function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.5, 2, 3]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
         
-        // UPDATED IO FUNCTIONS
         function showIO() { 
             document.getElementById('modal-io').style.display = 'flex'; 
             document.getElementById('io-textarea').value = state.memory.join(''); 
@@ -499,8 +503,7 @@
         
         function importSequence() { 
             let val = document.getElementById('io-textarea').value; 
-            // Allow 'x' to be used as '*' for manual typing
-            val = val.replace(/x/g, '*');
+            val = val.replace(/x/g, '*'); // Allow 'x' for '*'
             const valid = Object.keys(frequencies).concat(['.']); 
             state.memory = val.split('').filter(c => valid.includes(c)).slice(0, state.maxMem); 
             lcd.innerText = "LOADED " + state.memory.length; 
@@ -516,11 +519,9 @@
         function copyToClipboard() { const txt = document.getElementById('io-textarea'); txt.select(); document.execCommand('copy'); }
         async function pasteFromClipboard() { try { const text = await navigator.clipboard.readText(); document.getElementById('io-textarea').value = text; } catch (err) {} }
 
-        // UPDATED KEYBOARD LISTENER (Allows typing in Textarea)
+        // Keyboard listener with Textarea bypass
         window.addEventListener('keydown', (e) => {
             if (state.isPlaying) return;
-            
-            // Allow normal typing if focus is on the IO textarea
             if (e.target.tagName === 'TEXTAREA') return;
 
             let key = e.key;
