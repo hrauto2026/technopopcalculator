@@ -45,7 +45,10 @@
             --accent-orange: #ff0000;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
 
         body {
             background-color: var(--bg-color);
@@ -56,6 +59,10 @@
             min-height: 100vh;
             font-family: Arial, sans-serif;
             transition: background 0.3s;
+            /* Prevents the whole page from bouncing/scrolling on mobile */
+            overflow: hidden; 
+            position: fixed;
+            width: 100%;
         }
 
         #viewport {
@@ -166,6 +173,8 @@
             transition: all 0.05s;
             position: relative;
             user-select: none;
+            /* CRITICAL FIX: Disable double-tap zoom behavior */
+            touch-action: manipulation; 
         }
 
         button:active:not(:disabled) {
@@ -251,8 +260,8 @@
 
         <div class="util-grid">
             <button class="btn-util" onclick="toggleMode()" id="mode-btn">CALC</button>
-            <button class="btn-util mode-dep" onclick="toggleRecord()" id="rec-btn">REC MEM</button>
-            <button class="btn-util mode-dep" onclick="playSequence()" id="play-btn">PLAY MEM</button>
+            <button class="btn-util mode-dep" onclick="toggleRecord()" id="rec-btn">REC</button>
+            <button class="btn-util mode-dep" onclick="playSequence()" id="play-btn">PLAY</button>
             <button class="btn-util" onclick="toggleTheme()">THEME</button>
         </div>
 
@@ -309,23 +318,19 @@
                 <small style="color: var(--accent-orange); font-weight: bold;">OPERATING MANUAL</small>
             </header>
             <div class="manual-text">
-                <p style="font-style: italic; margin-bottom: 20px; opacity: 0.8;">Dear Customer, Thank you for using RS-2026A. Please read these instructions carefully.</p>
+                <p style="font-style: italic; margin-bottom: 20px; opacity: 0.8;">Dear Customer, Thank you for choosing the RS-2026A. This unit is designed for speed and musical precision.</p>
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. Mode Selection</strong>
-                        <p style="margin: 0;">Toggle between <strong>Calculation</strong> and <strong>Music</strong> modes using the light-yellow button. Note that the display marker will track your current mode.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. Touch Protection</strong>
+                        <p style="margin: 0;">The RS-2026A features native gesture suppression. High-speed double-tapping will not trigger system zoom.</p>
                     </section>
                     <section>
                         <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. Universal Synthesis</strong>
-                        <p style="margin: 0;">This unit maintains square-wave audio feedback in both modes. Calculations are audible.</p>
-                    </section>
-                    <section style="border: 1px solid #444; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.05);">
-                        <strong style="display: block; color: var(--shocking-green); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. Memory & Reset</strong>
-                        <p style="margin: 0;">In Music mode, use <strong>[Del Rec]</strong>. In Calculator mode, this becomes the <strong>[AC]</strong> function for clearing registers.</p>
+                        <p style="margin: 0;">The square-wave generator remains active in Calculator mode for a full tactile experience.</p>
                     </section>
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. Return Key</strong>
-                        <p style="margin: 0;">The <strong>[RETURN]</strong> key performs a standard backspace on the current active input digit or musical note.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. Memory Logic</strong>
+                        <p style="margin: 0;">"Del Rec" (Music) becomes "AC" (Calc). Memory storage is preserved during theme changes.</p>
                     </section>
                 </div>
                 <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP INDUSTRIES / RS2026</footer>
@@ -382,7 +387,6 @@
         function handleInput(key) {
             if (state.isPlaying) return;
 
-            // Synthesis sound plays for EVERY key in both modes
             const noteVal = key === 'Enter' ? '=' : key;
             if (key !== '.') playNote(noteVal);
 
@@ -398,7 +402,6 @@
                 }
                 updateMemIndicator();
             } else {
-                // Calculator Logic
                 const digits = ['0','1','2','3','4','5','6','7','8','9','.'];
                 const operators = ['+', '-', '*', '/', 'x'];
 
@@ -412,7 +415,6 @@
                     catch { lcd.innerText = "ERROR"; state.calcInput = ""; }
                 } 
                 else if (digits.includes(key)) {
-                    // Start fresh if a result was just shown
                     if (state.isResultDisplayed) {
                         state.calcInput = key;
                         state.isResultDisplayed = false;
@@ -422,7 +424,6 @@
                     lcd.innerText = state.calcInput.slice(-12);
                 }
                 else if (operators.includes(key)) {
-                    // Continue from result if operator is pressed
                     state.isResultDisplayed = false;
                     state.calcInput += key;
                     lcd.innerText = state.calcInput.slice(-12);
@@ -527,12 +528,10 @@
             state.liveBuffer = "";
             state.isResultDisplayed = false;
             
-            // UI Updates
             document.getElementById('mode-btn').innerText = state.isMusic ? "CALC" : "MUSIC"; 
             modeMarker.innerText = state.isMusic ? "Music Mode" : "Calculator Mode";
             document.getElementById('ac-del-btn').querySelector('span').innerText = state.isMusic ? "Del Rec" : "AC";
             
-            // Enable/Disable buttons based on mode
             document.querySelectorAll('.mode-dep').forEach(btn => btn.disabled = !state.isMusic); 
             document.getElementById('io-btn').disabled = !state.isMusic;
             document.getElementById('special-btn').disabled = !state.isMusic;
@@ -553,7 +552,6 @@
                 } 
                 updateMemIndicator();
             } else {
-                // Calculator backspace
                 state.calcInput = state.calcInput.toString().slice(0, -1);
                 lcd.innerText = state.calcInput || "0";
                 state.isResultDisplayed = false;
@@ -600,8 +598,5 @@
             }
         });
     </script>
-<script data-goatcounter="https://musiccalculator.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
-
 </body>
 </html>
