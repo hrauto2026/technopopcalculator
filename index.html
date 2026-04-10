@@ -68,17 +68,17 @@ body {
     position: fixed; 
 }
 
-        #viewport {
-            width: 100%;
-            height: 100%; 
-            background: var(--case-bg);
-            /* Standard padding plus safe area offsets for iOS Notch/Home Bar */
-            padding: calc(10px + env(safe-area-inset-top)) 20px calc(10px + env(safe-area-inset-bottom)) 20px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: background 0.3s;
-        }
+#viewport {
+    width: 100%;
+    height: 100%; 
+    background: var(--case-bg);
+    /* Reduced the 10px constant to 5px for a tighter fit */
+    padding: calc(10px + env(safe-area-inset-top)) 20px calc(5px + env(safe-area-inset-bottom)) 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: background 0.3s;
+}
 
         .header {
             display: flex;
