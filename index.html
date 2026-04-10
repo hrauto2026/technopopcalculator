@@ -302,7 +302,7 @@
         <div class="modal-btns">
             <button class="btn-dialog" onclick="copyToClipboard()">COPY</button>
             <button class="btn-dialog" onclick="pasteFromClipboard()">PASTE</button>
-            <button class="btn-dialog" onclick="importSequence()" style="background: var(--shocking-green); color: #000;">IMPORT MEM</button>
+            <button class="btn-dialog" onclick="importSequence()" style="background: var(--shocking-green); color: #000;">IMPORT</button>
             <button class="btn-dialog" onclick="clearAll(); closeModals();" style="background:#900">Del Rec</button>
         </div>
         <button class="btn-dialog" onclick="closeModals()" style="width:100%">CLOSE</button>
@@ -333,6 +333,10 @@
                         <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. Return Key</strong>
                         <p style="margin: 0;">The <strong>[RETURN]</strong> key performs a standard backspace on the current active input digit or musical note.</p>
                     </section>
+                    <section>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. Special Key</strong>
+                        <p style="margin: 0;">Pressing the <strong>[SPECIAL KEY]</strong> will play a snippet of Kraftwerk's <em>Pocket Calculator / Taschenrechner</em>. You can interrupt and stop playback at any time by pressing <strong>[PLAY MEM]</strong>.</p>
+                    </section>
                 </div>
                 <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP INDUSTRIES / RS2026</footer>
             </div>
@@ -341,6 +345,11 @@
     </div>
 
     <script>
+        // --- CONFIGURATION ---
+        // Change this value to adjust how many digits/characters show on the LCD screen at once
+        const MAX_LCD_DIGITS = 22; 
+        // ---------------------
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const frequencies = {
             '1': 261.63, '2': 293.66, '3': 329.63, '4': 349.23, '5': 392.00, '6': 440.00, '7': 493.88,
@@ -400,7 +409,7 @@
                     }
                 } else {
                     state.liveBuffer += key;
-                    lcd.innerText = state.liveBuffer.slice(-12);
+                    lcd.innerText = state.liveBuffer.slice(-MAX_LCD_DIGITS);
                 }
                 updateMemIndicator();
             } else {
@@ -412,7 +421,7 @@
                     try { 
                         let raw = eval(state.calcInput.replace(/x/g, '*'));
                         state.calcInput = parseFloat(raw.toFixed(10)).toString(); 
-                        lcd.innerText = state.calcInput; 
+                        lcd.innerText = state.calcInput.slice(-MAX_LCD_DIGITS); 
                         state.isResultDisplayed = true;
                     }
                     catch { lcd.innerText = "ERROR"; state.calcInput = ""; }
@@ -425,13 +434,13 @@
                     } else {
                         state.calcInput += key;
                     }
-                    lcd.innerText = state.calcInput.slice(-12);
+                    lcd.innerText = state.calcInput.slice(-MAX_LCD_DIGITS);
                 }
                 else if (operators.includes(key)) {
                     // Continue from result if operator is pressed
                     state.isResultDisplayed = false;
                     state.calcInput += key;
-                    lcd.innerText = state.calcInput.slice(-12);
+                    lcd.innerText = state.calcInput.slice(-MAX_LCD_DIGITS);
                 }
             }
         }
@@ -444,6 +453,7 @@
         async function playSpecial() {
             if (state.isPlaying || !state.isMusic) return;
             state.isPlaying = true;
+            document.getElementById('play-btn').classList.add('play-active');
             setButtonsState(true);
 
             const sequence = "4599.845887..4599.845887.6..4599.845887..4599.845887.6..44284.44284.44284.44284...........";
@@ -453,7 +463,7 @@
             const delay = 150;
 
             const ticker = setInterval(() => {
-                const display = (fullLyrics + "          ").substring(lyricIdx, lyricIdx + 12);
+                const display = (fullLyrics + "          ").substring(lyricIdx, lyricIdx + MAX_LCD_DIGITS);
                 lcd.innerText = display;
                 lyricIdx++;
                 if (lyricIdx > fullLyrics.length) lyricIdx = 0;
@@ -474,6 +484,7 @@
 
             clearInterval(ticker);
             state.isPlaying = false;
+            document.getElementById('play-btn').classList.remove('play-active');
             setButtonsState(false);
             lcd.innerText = "TECHNOPOP";
         }
@@ -482,6 +493,7 @@
             // Act as a universal stop button if anything is playing
             if (state.isPlaying) { 
                 state.isPlaying = false; 
+                document.getElementById('play-btn').classList.remove('play-active');
                 return; 
             }
             if (!state.isMusic || state.memory.length === 0) return;
@@ -561,7 +573,7 @@
                     lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`; 
                 } else { 
                     state.liveBuffer = state.liveBuffer.slice(0, -1); 
-                    lcd.innerText = state.liveBuffer.slice(-12) || "TECHNOPOP"; 
+                    lcd.innerText = state.liveBuffer.slice(-MAX_LCD_DIGITS) || "TECHNOPOP"; 
                 } 
                 updateMemIndicator();
             } else {
