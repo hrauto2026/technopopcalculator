@@ -112,16 +112,28 @@
             position: absolute;
             top: 5px;
             left: 10px;
-            font-family: 'Orbitron', monospace;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
             font-weight: bold;
             color: var(--lcd-text);
             visibility: hidden;
         }
 
+        #lcd-mode-marker {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--lcd-text);
+            opacity: 0.7;
+        }
+
         #lcd-main {
             text-align: right;
-            font-family: 'Orbitron', monospace;
+            font-family: 'Courier New', monospace;
             font-size: 32px;
             font-weight: bold;
             color: var(--lcd-text);
@@ -234,12 +246,13 @@
         <div id="lcd-container">
             <div id="lcd-mem">M</div>
             <div id="lcd-main">READY</div>
+            <div id="lcd-mode-marker">Music Mode</div>
         </div>
 
         <div class="util-grid">
             <button class="btn-util" onclick="toggleMode()" id="mode-btn">CALC</button>
-            <button class="btn-util mode-dep" onclick="toggleRecord()" id="rec-btn">REC</button>
-            <button class="btn-util mode-dep" onclick="playSequence()" id="play-btn">PLAY</button>
+            <button class="btn-util mode-dep" onclick="toggleRecord()" id="rec-btn">REC MEM</button>
+            <button class="btn-util mode-dep" onclick="playSequence()" id="play-btn">PLAY MEM</button>
             <button class="btn-util" onclick="toggleTheme()">THEME</button>
         </div>
 
@@ -265,14 +278,14 @@
             <button class="btn-op control-btn" data-key="+" onclick="handleInput('+')"><span class="btn-text">+</span><span class="solfege">la²</span></button>
 
             <button class="btn-op control-btn" onclick="undoLast()" style="background:#bbb"><span class="btn-text" style="font-size:11px">RETURN</span></button>
-            <button class="btn-num control-btn" onclick="clearAll()" style="background:#eee"><span class="btn-text" style="font-size:12px">Del Rec</span></button>
+            <button class="btn-num control-btn" id="ac-del-btn" onclick="clearAll()" style="background:#eee"><span class="btn-text" style="font-size:12px">Del Rec</span></button>
             <button class="btn-op control-btn" data-key="Enter" onclick="handleInput('=')" style="background:#bbb"><span class="btn-text">=</span><span class="solfege">do³</span></button>
-            <button class="btn-op control-btn" onclick="showIO()" style="background:#bbb"><span class="btn-text" style="font-size:14px">IO</span></button>
+            <button class="btn-op control-btn" id="io-btn" onclick="showIO()" style="background:#bbb"><span class="btn-text" style="font-size:14px">IO</span></button>
         </div>
 
         <div class="footer">
             <button class="btn-footer btn-how" onclick="showHowTo()">MANUAL</button>
-            <button class="btn-footer btn-special-key" onclick="playSpecial()">SPECIAL KEY</button>
+            <button class="btn-footer btn-special-key" id="special-btn" onclick="playSpecial()">SPECIAL KEY</button>
         </div>
     </div>
 
@@ -296,23 +309,23 @@
                 <small style="color: var(--accent-orange); font-weight: bold;">OPERATING MANUAL</small>
             </header>
             <div class="manual-text">
-                <p style="font-style: italic; margin-bottom: 20px; opacity: 0.8;">Thank you for choosing Technopop. Please read these instructions carefully.</p>
+                <p style="font-style: italic; margin-bottom: 20px; opacity: 0.8;">Dear Customer, Thank you for using RS-2026A. Please read these instructions carefully.</p>
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <section>
                         <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. Mode Selection</strong>
-                        <p style="margin: 0;">Toggle between <strong>Calculation</strong> and <strong>Music</strong> modes using the light-yellow <strong>[CALC]</strong> button.</p>
+                        <p style="margin: 0;">Toggle between <strong>Calculation</strong> and <strong>Music</strong> modes using the light-yellow button. Note that the display marker will track your current mode.</p>
                     </section>
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. Memory Management</strong>
-                        <p style="margin: 0;">An <strong>"M"</strong> indicator appears on the LCD when notes are recorded. To reset memory, press <strong>[Del Rec]</strong>.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. Universal Synthesis</strong>
+                        <p style="margin: 0;">This unit maintains square-wave audio feedback in both modes. Calculations are audible.</p>
                     </section>
                     <section style="border: 1px solid #444; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.05);">
-                        <strong style="display: block; color: var(--shocking-green); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. The Special Key</strong>
-                        <p style="margin: 0;">Triggers a performance of <strong>Kraftwerk's "Pocket Calculator"</strong> melody with a rolling ticker-tape lyric display.</p>
+                        <strong style="display: block; color: var(--shocking-green); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. Memory & Reset</strong>
+                        <p style="margin: 0;">In Music mode, use <strong>[Del Rec]</strong>. In Calculator mode, this becomes the <strong>[AC]</strong> function for clearing registers.</p>
                     </section>
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. Visual Feedback</strong>
-                        <p style="margin: 0;">Active keys emit a <strong>Shocking Green</strong> sparkle. All other keys are locked during playback for precision.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. Return Key</strong>
+                        <p style="margin: 0;">The <strong>[RETURN]</strong> key performs a standard backspace on the current active input digit or musical note.</p>
                     </section>
                 </div>
                 <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP INDUSTRIES / RS2026</footer>
@@ -332,6 +345,7 @@
             isMusic: true,
             isRecording: false,
             isPlaying: false,
+            isResultDisplayed: false,
             memory: [],
             liveBuffer: "", 
             calcInput: "",
@@ -343,6 +357,7 @@
 
         const lcd = document.getElementById('lcd-main');
         const memIndicator = document.getElementById('lcd-mem');
+        const modeMarker = document.getElementById('lcd-mode-marker');
 
         function updateMemIndicator() {
             memIndicator.style.visibility = state.memory.length > 0 ? 'visible' : 'hidden';
@@ -366,10 +381,12 @@
 
         function handleInput(key) {
             if (state.isPlaying) return;
+
+            // Synthesis sound plays for EVERY key in both modes
+            const noteVal = key === 'Enter' ? '=' : key;
+            if (key !== '.') playNote(noteVal);
+
             if (state.isMusic) {
-                const noteVal = key === 'Enter' ? '=' : key;
-                if (key !== '.') playNote(noteVal);
-                
                 if (state.isRecording) {
                     if (state.memory.length < state.maxMem) {
                         state.memory.push(key);
@@ -381,15 +398,35 @@
                 }
                 updateMemIndicator();
             } else {
+                // Calculator Logic
+                const digits = ['0','1','2','3','4','5','6','7','8','9','.'];
+                const operators = ['+', '-', '*', '/', 'x'];
+
                 if (key === '=' || key === 'Enter') {
                     try { 
-                        // Evaluation with precision fix for 2.01 * 3 style floating point bugs
-                        let raw = eval(state.calcInput.replace('x', '*'));
+                        let raw = eval(state.calcInput.replace(/x/g, '*'));
                         state.calcInput = parseFloat(raw.toFixed(10)).toString(); 
                         lcd.innerText = state.calcInput; 
+                        state.isResultDisplayed = true;
                     }
                     catch { lcd.innerText = "ERROR"; state.calcInput = ""; }
-                } else { state.calcInput += key; lcd.innerText = state.calcInput.slice(-12); }
+                } 
+                else if (digits.includes(key)) {
+                    // Start fresh if a result was just shown
+                    if (state.isResultDisplayed) {
+                        state.calcInput = key;
+                        state.isResultDisplayed = false;
+                    } else {
+                        state.calcInput += key;
+                    }
+                    lcd.innerText = state.calcInput.slice(-12);
+                }
+                else if (operators.includes(key)) {
+                    // Continue from result if operator is pressed
+                    state.isResultDisplayed = false;
+                    state.calcInput += key;
+                    lcd.innerText = state.calcInput.slice(-12);
+                }
             }
         }
 
@@ -399,7 +436,7 @@
         }
 
         async function playSpecial() {
-            if (state.isPlaying) return;
+            if (state.isPlaying || !state.isMusic) return;
             state.isPlaying = true;
             setButtonsState(true);
 
@@ -480,6 +517,7 @@
             state.calcInput = ""; 
             state.memory = []; 
             state.liveBuffer = "";
+            state.isResultDisplayed = false;
             lcd.innerText = state.isMusic ? "READY" : "0"; 
             updateMemIndicator(); 
         }
@@ -487,23 +525,52 @@
         function toggleMode() { 
             state.isMusic = !state.isMusic; 
             state.liveBuffer = "";
+            state.isResultDisplayed = false;
+            
+            // UI Updates
             document.getElementById('mode-btn').innerText = state.isMusic ? "CALC" : "MUSIC"; 
+            modeMarker.innerText = state.isMusic ? "Music Mode" : "Calculator Mode";
+            document.getElementById('ac-del-btn').querySelector('span').innerText = state.isMusic ? "Del Rec" : "AC";
+            
+            // Enable/Disable buttons based on mode
             document.querySelectorAll('.mode-dep').forEach(btn => btn.disabled = !state.isMusic); 
+            document.getElementById('io-btn').disabled = !state.isMusic;
+            document.getElementById('special-btn').disabled = !state.isMusic;
+
             clearAll(); 
         }
 
         function toggleTheme() { state.themeIdx = (state.themeIdx + 1) % state.themes.length; document.body.setAttribute('data-theme', state.themes[state.themeIdx]); }
-        function undoLast() { if (state.isRecording && state.memory.length > 0) { state.memory.pop(); lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`; updateMemIndicator(); } else { state.liveBuffer = state.liveBuffer.slice(0, -1); lcd.innerText = state.liveBuffer.slice(-12) || "READY"; } }
+        
+        function undoLast() { 
+            if (state.isMusic) {
+                if (state.isRecording && state.memory.length > 0) { 
+                    state.memory.pop(); 
+                    lcd.innerText = `[${state.memory.length}] ${state.memory.join('').slice(-8)}`; 
+                } else { 
+                    state.liveBuffer = state.liveBuffer.slice(0, -1); 
+                    lcd.innerText = state.liveBuffer.slice(-12) || "READY"; 
+                } 
+                updateMemIndicator();
+            } else {
+                // Calculator backspace
+                state.calcInput = state.calcInput.toString().slice(0, -1);
+                lcd.innerText = state.calcInput || "0";
+                state.isResultDisplayed = false;
+            }
+        }
+
         function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.5, 2, 3]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
         
         function showIO() { 
+            if (!state.isMusic) return;
             document.getElementById('modal-io').style.display = 'flex'; 
             document.getElementById('io-textarea').value = state.memory.join(''); 
         }
         
         function importSequence() { 
             let val = document.getElementById('io-textarea').value; 
-            val = val.replace(/x/g, '*'); // Allow 'x' for '*'
+            val = val.replace(/x/g, '*');
             const valid = Object.keys(frequencies).concat(['.']); 
             state.memory = val.split('').filter(c => valid.includes(c)).slice(0, state.maxMem); 
             lcd.innerText = "LOADED " + state.memory.length; 
@@ -519,7 +586,6 @@
         function copyToClipboard() { const txt = document.getElementById('io-textarea'); txt.select(); document.execCommand('copy'); }
         async function pasteFromClipboard() { try { const text = await navigator.clipboard.readText(); document.getElementById('io-textarea').value = text; } catch (err) {} }
 
-        // Keyboard listener with Textarea bypass
         window.addEventListener('keydown', (e) => {
             if (state.isPlaying) return;
             if (e.target.tagName === 'TEXTAREA') return;
