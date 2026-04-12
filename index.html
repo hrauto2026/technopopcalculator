@@ -123,7 +123,17 @@
             font-size: 14px;
             font-weight: bold;
             color: var(--lcd-text);
-            visibility: hidden;
+            visibility: visible;
+        }
+
+        .mem-marker {
+            margin-right: 4px;
+            opacity: 0.15;
+            transition: opacity 0.2s;
+        }
+        
+        .mem-marker.active {
+            opacity: 1;
         }
 
         #lcd-mode-marker {
@@ -195,23 +205,26 @@
         .btn-num { background: var(--btn-num); height: 100%; }
         .btn-op { background: var(--btn-op); height: 100%; }
         
-        /* Requirement 1: REC MEM Pulsing Border Animation */
         @keyframes rec-pulse {
-            0%, 100% {
-                border: 2px solid transparent;
-                box-shadow: 0 4px #222;
-            }
-            50% {
-                border: 2px solid #ff3b30;
-                box-shadow: 0 4px #222, 0 0 10px rgba(255, 59, 48, 0.6);
-            }
+            0%, 100% { border: 2px solid transparent; box-shadow: 0 4px #222; }
+            50% { border: 2px solid #ff3b30; box-shadow: 0 4px #222, 0 0 10px rgba(255, 59, 48, 0.6); }
         }
         
         .rec-pulsing {
             animation: rec-pulse 1s ease-in-out infinite;
         }
 
-        /* Requirement 5: Playback Key Dimming */
+        /* Requirement 3: Playback Green Flash */
+        @keyframes play-pulse {
+            0%, 100% { border: 2px solid transparent; box-shadow: 0 4px #222; color: #4cd964; }
+            50% { border: 2px solid #4cd964; box-shadow: 0 4px #222, 0 0 10px rgba(76, 217, 100, 0.6); color: #fff; }
+        }
+        
+        .play-pulsing {
+            animation: play-pulse 1s ease-in-out infinite;
+            color: #4cd964 !important;
+        }
+
         .main-grid.dim-keys .btn-text,
         .main-grid.dim-keys .solfege {
             color: #90EE90 !important;
@@ -226,17 +239,13 @@
             z-index: 10;
         }
         
-        /* Requirement 5: Override dimming for active sparkle key */
         .sparkle-active .btn-text, .sparkle-active .solfege {
             color: #000 !important;
         }
 
         .rec-active { color: #ff3b30 !important; }
-        
-        /* Requirement 2: Special Key Visual Sync */
         .play-active { color: #4cd964 !important; }
 
-        /* Requirement 4: Loop Mode Yellow Border */
         .loop-active {
             border: 3px solid #ffeb3b;
             box-shadow: 0 4px #222, 0 0 10px rgba(255, 235, 59, 0.5);
@@ -272,7 +281,6 @@
 
         .manual-text { font-size: 13px; line-height: 1.6; color: #ccc; }
 
-        /* Requirement 4: Loop Selection Modal */
         .loop-modal {
             display: none;
             position: absolute;
@@ -284,7 +292,7 @@
             padding: 25px;
             z-index: 150;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            min-width: 280px;
+            min-width: 300px;
         }
 
         .loop-modal h3 {
@@ -296,31 +304,26 @@
 
         .loop-options {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
             margin-top: 15px;
         }
 
         .loop-option-btn {
             background: #444;
             color: #fff;
-            padding: 20px 10px;
+            padding: 15px 2px;
             border-radius: 8px;
             border: 2px solid #666;
             font-weight: bold;
-            font-size: 20px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
         }
 
-        .loop-option-btn:hover {
-            background: #555;
-            border-color: #ffeb3b;
-        }
-
-        .loop-option-btn:active {
-            transform: scale(0.95);
-        }
+        .loop-option-btn:hover { background: #555; }
+        .loop-option-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body data-theme="retro">
@@ -332,7 +335,11 @@
         </div>
 
         <div id="lcd-container">
-            <div id="lcd-mem">M</div>
+            <div id="lcd-mem">
+                <span id="mem-marker-0" class="mem-marker">M1</span>
+                <span id="mem-marker-1" class="mem-marker">M2</span>
+                <span id="mem-marker-2" class="mem-marker">M3</span>
+            </div>
             <div id="lcd-main">TECHNOPOP</div>
             <div id="lcd-mode-marker">Music Mode</div>
         </div>
@@ -361,13 +368,13 @@
             <button class="btn-op control-btn" data-key="-" onclick="handleInput('-')"><span class="btn-text">-</span><span class="solfege">sol²</span></button>
 
             <button class="btn-num control-btn" data-key="0" onclick="handleInput('0')"><span class="btn-text">0</span><span class="solfege">ti²</span></button>
-            <button class="btn-num control-btn" data-key="." onclick="handleInput('.')"><span class="btn-text">.</span><span class="solfege" style="color:#cc0000">mute</span></button>
-            <button class="btn-op mode-dep control-btn" onclick="cycleSpeed()" id="spd-btn"><span class="btn-text" style="font-size:18px">2x</span><span class="solfege">Speed</span></button>
+            <button class="btn-num control-btn" data-key="." onclick="handleInput('.')"><span class="btn-text">.</span><span class="solfege" style="color:#cc0000; font-size: 9px; line-height: 1; text-align: center; max-width: 100%; white-space: normal; letter-spacing: -0.5px;">single empty note</span></button>
+            <button class="btn-op control-btn" data-key="Enter" onclick="handleInput('=')"><span class="btn-text">=</span><span class="solfege">do³</span></button>
             <button class="btn-op control-btn" data-key="+" onclick="handleInput('+')"><span class="btn-text">+</span><span class="solfege">la²</span></button>
 
             <button class="btn-op control-btn" onclick="undoLast()" style="background:#bbb"><span class="btn-text" style="font-size:11px">RETURN</span></button>
             <button class="btn-num control-btn" id="ac-del-btn" onclick="clearAll()" style="background:#eee"><span class="btn-text" style="font-size:12px">Del Rec</span></button>
-            <button class="btn-op control-btn" data-key="Enter" onclick="handleInput('=')" style="background:#bbb"><span class="btn-text">=</span><span class="solfege">do³</span></button>
+            <button class="btn-op mode-dep control-btn" onclick="cycleSpeed()" id="spd-btn" style="background:#bbb"><span class="btn-text" style="font-size:18px">2x</span><span class="solfege">Speed</span></button>
             <button class="btn-op control-btn" id="io-btn" onclick="showIO()" style="background:#bbb"><span class="btn-text" style="font-size:14px">IO</span></button>
         </div>
 
@@ -388,13 +395,15 @@
         <div class="modal-btns">
             <button class="btn-dialog" onclick="copyToClipboard()">COPY</button>
             <button class="btn-dialog" onclick="pasteFromClipboard()">PASTE</button>
+            <button class="btn-dialog" onclick="shareMusic()" id="share-btn" style="background:#0055aa">SHARE MUSIC</button>
+            <button class="btn-dialog" onclick="exportMidi()" id="midi-btn" style="background:#800080">EXPORT MIDI</button>
             <button class="btn-dialog" onclick="importSequence()" style="background: var(--shocking-green); color: #000;">IMPORT MEM</button>
             <button class="btn-dialog" onclick="clearAll(); closeModals();" style="background:#900">Del Rec</button>
         </div>
         <button class="btn-dialog" onclick="closeModals()" style="width:100%">CLOSE</button>
     </div>
 
-   <div id="modal-how" class="modal">
+<div id="modal-how" class="modal">
         <div class="modal-scroll">
             <header style="text-align: center; border-bottom: 2px solid var(--accent-orange); padding-bottom: 10px; margin-bottom: 20px;">
                 <h2 style="margin: 0; font-size: 20px; letter-spacing: 2px;">RS-2026A</h2>
@@ -405,162 +414,159 @@
                     Scroll down for Traditional Chinese / 向下捲動查看繁體中文說明
                 </p>
 
-                <!-- ENGLISH MANUAL -->
                 <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px;">
                     <h3 style="color: var(--accent-orange); border-bottom: 1px solid #444; padding-bottom: 5px;">🇬🇧 ENGLISH</h3>
+                    <p>Thank you for using Techno Calculator RS-2026A. This instrument combines a vintage-inspired synthesizer with a fully functional 10-digit calculator.</p>
                     
                     <section>
                         <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. Mode Selection (CALC / MUSIC)</strong>
-                        <p style="margin: 0;">Use the top-left light-yellow button to toggle between <strong>Calculation</strong> and <strong>Music</strong> modes. The bottom-left of the LCD will indicate your current mode. Note that sounds are synthesized in both modes.</p>
+                        <p style="margin: 0;">Toggle the <strong>[CALC / MUSIC]</strong> button at the top left to switch functions. The LCD screen will indicate your current mode. Music mode turns the keypad into a musical scale, while Calc mode handles mathematics.</p>
                     </section>
                     
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. Recording Music (REC MEM)</strong>
-                        <p style="margin: 0;">In Music mode, press <strong>[REC MEM]</strong> to start recording. The button will have a pulsing red border. Play your melody using the keypad (numbers and operators act as different musical notes). Press <strong>[REC MEM]</strong> again to stop and save your sequence.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. Playing & Recording Music</strong>
+                        <p style="margin: 0;">In Music mode, each key corresponds to a note (labels are visible below the numbers).<br>
+                        • <strong>Record:</strong> Press <strong>[REC MEM]</strong> to start. The button will flash red. Every note you play (including "." for rests) is recorded. Press it again to save.<br>
+                        • <strong>Playback:</strong> Press <strong>[PLAY MEM]</strong> to listen. Use <strong>[Speed]</strong> to toggle tempo and <strong>[Loop]</strong> to repeat the sequence.</p>
                     </section>
 
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. Playback & Speed (PLAY MEM)</strong>
-                        <p style="margin: 0;">Press <strong>[PLAY MEM]</strong> to play back your recorded sequence. The button text will turn green during playback. You can press <strong>[PLAY MEM]</strong> again at any time to stop. Use the <strong>[Speed]</strong> button to cycle through playback speeds (0.5x to 4x).</p>
-                    </section>
-
-                    <section style="border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; background: rgba(255,235,59,0.05);">
-                        <strong style="display: block; color: #ffeb3b; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. THREE-SLOT MEMORY SYSTEM (NEW!)</strong>
-                        <p style="margin: 0;">Press the <strong>[MEM SLOT]</strong> button to cycle between three independent memory slots (MEM SLOT 1, SLOT 2, SLOT 3). The LCD will display the current slot for 1 second. Each slot can store a different melody sequence!</p>
-                    </section>
-
-                    <section style="border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; background: rgba(255,235,59,0.05);">
-                        <strong style="display: block; color: #ffeb3b; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. LOOP MODE (NEW!)</strong>
-                        <p style="margin: 0;">Press <strong>[Loop Off]</strong> to activate loop mode. A modal will appear asking you to select how many times to loop (2-5). The button will show a yellow border and change to "Loop On" when active. Your sequence will repeat the selected number of times during playback.</p>
-                    </section>
-
-                    <section style="border: 1px solid #444; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.05);">
-                        <strong style="display: block; color: var(--shocking-green); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">06. IO Sequence Editor (Import / Export)</strong>
-                        <p style="margin: 0;">Press the <strong>[IO]</strong> button to open the Memory Data Transfer menu. Here you can view your recorded sequence as text (e.g., <code>123+45.</code>).<br><br>
-                        • <strong>Export:</strong> Click <strong>[COPY]</strong> to copy the sequence to your clipboard and share it.<br>
-                        • <strong>Import/Edit:</strong> You can type directly into the box or click <strong>[PASTE]</strong> to paste a sequence from elsewhere. Click <strong>[IMPORT]</strong> (the green button) to load this sequence into the synthesizer's memory.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. Memory Slots (M1, M2, M3)</strong>
+                        <p style="margin: 0;">The RS-2026A features three independent memory slots. Press <strong>[MEM SLOT]</strong> to cycle through them. Active slots with saved data are highlighted as M1, M2, or M3 on the top of the LCD.</p>
                     </section>
 
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">07. Memory, Deletion & Return</strong>
-                        <p style="margin: 0;">• <strong>[Del Rec] / [AC]:</strong> Clears the entire recorded memory (Music mode) or clears the calculator screen (Calc mode).<br>
-                        • <strong>[RETURN]:</strong> Acts as a backspace, deleting the last entered note or digit.</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. I/O Panel: Sharing & Exporting</strong>
+                        <p style="margin: 0;">Press <strong>[IO]</strong> to access advanced data features:<br>
+                        • <strong>Share Music:</strong> Generates a unique URL containing your sequence. Copy and send it to friends to let them load your song instantly.<br>
+                        • <strong>Export MIDI:</strong> Downloads your sequence as a standard MIDI file for use in professional music software (DAWs).<br>
+                        • <strong>Programming:</strong> You can paste sequences directly into the text area and press <strong>[IMPORT MEM]</strong> to load external compositions.</p>
                     </section>
 
-                    <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">08. Special Key</strong>
-                        <p style="margin: 0;">Pressing the <strong>[SPECIAL KEY]</strong> at the bottom will automatically play a snippet of Kraftwerk's <em>Pocket Calculator / Taschenrechner</em>. The play button turns green during playback. You can interrupt and stop playback at any time by pressing <strong>[PLAY MEM]</strong>.</p>
+                    <section style="background: rgba(255,102,0,0.1); padding: 10px; border-left: 3px solid var(--accent-orange);">
+                        <strong style="display: block; color: var(--accent-orange); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. The "Special Key" Tribute</strong>
+                        <p style="margin: 0; font-size: 12px;">The <strong>[SPECIAL KEY]</strong> is an homage to the electronic music pioneers <strong>Kraftwerk</strong> and their 1981 track <em>"Pocket Calculator"</em>. As the lyrics suggest: <br><em>"By pressing down a special key, it plays a little melody."</em><br> Press it to hear the classic theme accompanied by scrolling lyrics on the LCD.</p>
                     </section>
                 </div>
 
-                <!-- TRADITIONAL CHINESE MANUAL -->
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <h3 style="color: var(--accent-orange); border-bottom: 1px solid #444; padding-bottom: 5px;">HK 繁體中文</h3>
+                <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px;">
+                    <h3 style="color: var(--accent-orange); border-bottom: 1px solid #444; padding-bottom: 5px;">🇭🇰 繁體中文 (香港)</h3>
+                    <p>歡迎你使用 Techno Calculator RS-2026A。呢部機係向復古電子音樂致敬之作，結合咗專業合成器功能同埋 10 位數計算機。</p>
                     
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. 模式切換 (計算機 / 音樂)</strong>
-                        <p style="margin: 0;">使用左上角的淺黃色按鈕在<strong>計算機 (CALC)</strong>與<strong>音樂 (MUSIC)</strong>模式之間切換。螢幕左下方會顯示當前模式。請注意，兩種模式下按鍵皆會發出合成音效。</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">01. 模式切換</strong>
+                        <p style="margin: 0;">撳左上角嘅 <strong>[CALC / MUSIC]</strong> 掣就可以隨時轉換功能。LCD 螢幕會顯示目前模式。「音樂模式」下按鍵會變成琴鍵；「計算機模式」則進行一般數學運算。</p>
                     </section>
                     
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. 錄製音樂 (REC MEM)</strong>
-                        <p style="margin: 0;">在音樂模式下，按下 <strong>[REC MEM]</strong> 開始錄音，按鈕會出現紅色脈動邊框。使用鍵盤彈奏旋律（數字與加減乘除代表不同音符）。再次按下 <strong>[REC MEM]</strong> 即可停止並儲存您的序列。</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">02. 演奏與錄音</strong>
+                        <p style="margin: 0;">喺音樂模式，每個掣都代表一個音符（掣面下方有簡譜提示）。<br>
+                        • <strong>錄音：</strong>撳 <strong>[REC MEM]</strong> 掣邊會閃紅燈。你撳嘅每一粒音（包括 "." 代表空拍）都會被記低。再撳一次就完成儲存。<br>
+                        • <strong>重播：</strong>撳 <strong>[PLAY MEM]</strong> 掣邊會閃綠燈播放。你可以用 <strong>[Speed]</strong> 調校快慢，或者用 <strong>[Loop]</strong> 設定重複播放。</p>
                     </section>
 
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. 播放與速度調整 (PLAY MEM)</strong>
-                        <p style="margin: 0;">按下 <strong>[PLAY MEM]</strong> 播放您錄製的旋律，播放時按鈕字體會變為綠色。您可以隨時再次按下該鍵來停止播放。使用 <strong>[Speed]</strong> 按鈕可切換播放速度（0.5倍至4倍）。</p>
-                    </section>
-
-                    <section style="border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; background: rgba(255,235,59,0.05);">
-                        <strong style="display: block; color: #ffeb3b; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. 三插槽記憶體系統 (新功能!)</strong>
-                        <p style="margin: 0;">按下 <strong>[MEM SLOT]</strong> 按鈕可在三個獨立的記憶插槽間切換 (MEM SLOT 1, SLOT 2, SLOT 3)。LCD螢幕將顯示當前插槽1秒鐘。每個插槽可以儲存不同的旋律序列！</p>
-                    </section>
-
-                    <section style="border: 1px solid #ffeb3b; padding: 10px; border-radius: 8px; background: rgba(255,235,59,0.05);">
-                        <strong style="display: block; color: #ffeb3b; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. 循環模式 (新功能!)</strong>
-                        <p style="margin: 0;">按下 <strong>[Loop Off]</strong> 啟動循環模式。將出現對話框要求您選擇循環次數 (2-5次)。啟動後按鈕會顯示黃色邊框並變更為「Loop On」。您的序列將在播放時重複選定的次數。</p>
-                    </section>
-
-                    <section style="border: 1px solid #444; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.05);">
-                        <strong style="display: block; color: var(--shocking-green); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">06. IO 序列編輯器 (匯入 / 匯出)</strong>
-                        <p style="margin: 0;">按下 <strong>[IO]</strong> 按鈕開啟記憶體數據傳輸選單。您可以在此以純文字查看錄製的音符序列（例如：<code>123+45.</code>）。<br><br>
-                        • <strong>匯出 (Export)：</strong>點擊 <strong>[COPY]</strong> 將序列複製到剪貼簿以便分享。<br>
-                        • <strong>匯入與編輯 (Import/Edit)：</strong>您可以直接在文字框內修改，或點擊 <strong>[PASTE]</strong> 貼上外部序列。完成後點擊綠色的 <strong>[IMPORT]</strong> 按鈕，即可將該旋律載入合成器的記憶體中。</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">03. 三組記憶插槽</strong>
+                        <p style="margin: 0;">本機提供三個獨立儲存空間。撳 <strong>[MEM SLOT]</strong> 嚟切換。LCD 上方嘅 <strong>M1, M2, M3</strong> 如果亮起，代表嗰個 Slot 已經儲咗音樂。</p>
                     </section>
 
                     <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">07. 刪除與返回鍵</strong>
-                        <p style="margin: 0;">• <strong>[Del Rec] / [AC]：</strong>在音樂模式下清除所有錄音記憶；在計算機模式下為歸零。<br>
-                        • <strong>[RETURN]：</strong>作為退格鍵使用，刪除上一個輸入的音符或數字。</p>
+                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">04. I/O 面版：分享與導出</strong>
+                        <p style="margin: 0;">撳 <strong>[IO]</strong> 掣可以進行數據交換：<br>
+                        • <strong>分享音樂：</strong>自動生成一條包含你段旋律嘅專屬網址，複製畀朋友一開條 link 就會載入音樂！<br>
+                        • <strong>Export MIDI：</strong>將你錄好嘅音樂下載成 <strong>.midi</strong> 檔，可以用喺 GarageBand 或者 Ableton 等專業作曲軟件。<br>
+                        • <strong>編程輸入：</strong>你可以喺文字框直接打音符編碼（例如 "1231"），然後撳 <strong>[IMPORT MEM]</strong> 載入。</p>
                     </section>
 
-                    <section>
-                        <strong style="display: block; color: #fff; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">08. 特殊彩蛋鍵 (SPECIAL KEY)</strong>
-                        <p style="margin: 0;">按下底部的 <strong>[SPECIAL KEY]</strong>，機器將自動演奏一段 Kraftwerk（發電廠樂團）的名曲 <em>Pocket Calculator / Taschenrechner</em>。播放按鈕會在播放時變為綠色。若要中斷播放，請隨時按下 <strong>[PLAY MEM]</strong>。</p>
+                    <section style="background: rgba(255,102,0,0.1); padding: 10px; border-left: 3px solid var(--accent-orange);">
+                        <strong style="display: block; color: var(--accent-orange); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. 「SPECIAL KEY」的故事</strong>
+                        <p style="margin: 0; font-size: 12px;"><strong>[SPECIAL KEY]</strong> 係向電子樂先驅 <strong>Kraftwerk</strong> 致敬。喺佢哋 1981 年嘅名曲 <em>"Pocket Calculator"</em> 入面提到：<br>「By pressing down a special key, it plays a little melody」<br>撳下呢個掣，你就會聽到嗰段經典旋律，LCD 仲會同步顯示歌詞。</p>
                     </section>
                 </div>
 
-                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP Calculator Version01 / RS2026 / <a href="https://www.threads.com/@cheaplad60" style="color: #ff6600;"target="_blank">Cheaplad's Threads</a></footer>
+                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP Calculator Version 2.3 / RS2026 / <a href="https://www.threads.com/@cheaplad60" style="color: #ff6600;" target="_blank">Cheaplad's Threads</a></footer>
             </div>
         </div>
         <button class="btn-dialog" onclick="closeModals()" style="width:100%; margin-top:20px; background: var(--accent-orange); color: #000;">CLOSE / 關閉</button>
     </div>
 
-    <!-- Requirement 4: Loop Selection Modal -->
+    <!-- Loop Selection Modal -->
     <div id="loop-modal" class="loop-modal">
         <h3>How many times to loop?</h3>
-        <p style="text-align: center; font-size: 12px; margin: 5px 0; opacity: 0.7;">Select loop count (2-5)</p>
+        <p style="text-align: center; font-size: 12px; margin: 5px 0; opacity: 0.7;">Select loop count</p>
         <div class="loop-options">
-            <button class="loop-option-btn" onclick="setLoopCount(2)">2</button>
-            <button class="loop-option-btn" onclick="setLoopCount(3)">3</button>
-            <button class="loop-option-btn" onclick="setLoopCount(4)">4</button>
-            <button class="loop-option-btn" onclick="setLoopCount(5)">5</button>
+            <button class="loop-option-btn" id="loop-opt-1" onclick="selectTempLoop(1)" style="font-size:11px;">No Loop</button>
+            <button class="loop-option-btn" id="loop-opt-2" onclick="selectTempLoop(2)">2</button>
+            <button class="loop-option-btn" id="loop-opt-3" onclick="selectTempLoop(3)">3</button>
+            <button class="loop-option-btn" id="loop-opt-4" onclick="selectTempLoop(4)">4</button>
+            <button class="loop-option-btn" id="loop-opt-5" onclick="selectTempLoop(5)">5</button>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-dialog" onclick="cancelLoop()" style="flex:1; background:#666">Cancel</button>
+            <button class="btn-dialog" onclick="confirmLoop()" style="flex:1; background:var(--shocking-green); color:#000">OK</button>
         </div>
     </div>
 
     <script>
+        // version 2.3
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const frequencies = {
             '1': 261.63, '2': 293.66, '3': 329.63, '4': 349.23, '5': 392.00, '6': 440.00, '7': 493.88,
             '8': 523.25, '9': 587.33, '0': 987.77, '/': 659.25, '*': 698.46, '-': 783.99, '+': 880.00, '=': 1046.50
         };
 
-        // Requirement 3: Three-slot memory system
         let state = {
             isMusic: true,
             isRecording: false,
             isPlaying: false,
             isResultDisplayed: false,
-            memories: [[], [], []],  // Three memory slots
-            currentSlot: 0,          // Current active slot (0, 1, 2)
+            memories: [[], [], []], 
+            currentSlot: 0, 
             liveBuffer: "", 
             calcInput: "",
             speed: 2,
             maxMem: 500,
             themes: ['retro', 'city-pop', 'stealth'],
             themeIdx: 0,
-            isLooping: false,        // Requirement 4: Loop state
-            loopCount: 1             // Requirement 4: Loop count
+            isLooping: false,
+            loopCount: 1
         };
 
+        let tempLoopCount = 1;
+
         const lcd = document.getElementById('lcd-main');
-        const memIndicator = document.getElementById('lcd-mem');
         const modeMarker = document.getElementById('lcd-mode-marker');
         const mainGrid = document.getElementById('main-grid');
 
-        // Requirement 3: Update memory indicator for current slot
+        // Check for Shared Music link parameters upon startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const seq = urlParams.get('seq');
+            if (seq) {
+                const valid = Object.keys(frequencies).concat(['.']); 
+                state.memories[0] = seq.split('').filter(c => valid.includes(c)).slice(0, state.maxMem);
+                updateMemIndicator();
+                lcd.innerText = "LINK LOADED";
+                setTimeout(() => { lcd.innerText = "TECHNOPOP"; }, 1500);
+            }
+        });
+
+        // Update permanent memory indicators
         function updateMemIndicator() {
-            const currentMemory = state.memories[state.currentSlot];
-            memIndicator.style.visibility = currentMemory.length > 0 ? 'visible' : 'hidden';
+            state.memories.forEach((mem, index) => {
+                const marker = document.getElementById(`mem-marker-${index}`);
+                if (mem.length > 0) {
+                    marker.classList.add('active');
+                } else {
+                    marker.classList.remove('active');
+                }
+            });
         }
 
-        // Requirement 3: Cycle through memory slots with LCD feedback
         function cycleSlot() {
             if (!state.isMusic) return;
             state.currentSlot = (state.currentSlot + 1) % 3;
             
-            // LCD Paint: Show slot number for 1 second
             lcd.innerText = `MEM SLOT ${state.currentSlot + 1}`;
             updateMemIndicator();
             
@@ -569,20 +575,16 @@
             }, 1000);
         }
 
-        // Requirement 4: Toggle loop mode
         function toggleLoop() {
             if (!state.isMusic) return;
-            
             const loopBtn = document.getElementById('loop-btn');
             
             if (!state.isLooping) {
-                // Disable all calculator buttons
                 setButtonsState(true);
-                
-                // Show loop selection modal
+                tempLoopCount = 1; // Default back to No loop visually
+                updateLoopUI();
                 document.getElementById('loop-modal').style.display = 'block';
             } else {
-                // Turn off looping
                 state.isLooping = false;
                 state.loopCount = 1;
                 loopBtn.innerText = "Loop Off";
@@ -590,16 +592,34 @@
             }
         }
 
-        // Requirement 4: Set loop count from modal
-        function setLoopCount(count) {
-            state.isLooping = true;
-            state.loopCount = count;
-            
+        function selectTempLoop(count) {
+            tempLoopCount = count;
+            updateLoopUI();
+        }
+
+        function updateLoopUI() {
+            document.querySelectorAll('.loop-option-btn').forEach(btn => btn.style.borderColor = '#666');
+            document.getElementById(`loop-opt-${tempLoopCount}`).style.borderColor = '#ffeb3b';
+        }
+
+        function confirmLoop() {
             const loopBtn = document.getElementById('loop-btn');
-            loopBtn.innerText = "Loop On";
-            loopBtn.classList.add('loop-active');
-            
-            // Hide modal and re-enable buttons
+            if (tempLoopCount === 1) {
+                state.isLooping = false;
+                state.loopCount = 1;
+                loopBtn.innerText = "Loop Off";
+                loopBtn.classList.remove('loop-active');
+            } else {
+                state.isLooping = true;
+                state.loopCount = tempLoopCount;
+                loopBtn.innerText = "Loop On";
+                loopBtn.classList.add('loop-active');
+            }
+            document.getElementById('loop-modal').style.display = 'none';
+            setButtonsState(false);
+        }
+
+        function cancelLoop() {
             document.getElementById('loop-modal').style.display = 'none';
             setButtonsState(false);
         }
@@ -620,11 +640,9 @@
             osc.stop(audioCtx.currentTime + 0.3);
         }
 
-        // Requirement 3: Updated to work with current slot
         function handleInput(key) {
             if (state.isPlaying) return;
 
-            // Synthesis sound plays for EVERY key in both modes
             const noteVal = key === 'Enter' ? '=' : key;
             if (key !== '.') playNote(noteVal);
 
@@ -633,15 +651,14 @@
                 if (state.isRecording) {
                     if (currentMemory.length < state.maxMem) {
                         currentMemory.push(key);
-                        lcd.innerText = `[${currentMemory.length}] ${currentMemory.join('').slice(-8)}`;
+                        lcd.innerText = `[${currentMemory.length}] ${currentMemory.join('').slice(-16)}`;
                     }
                 } else {
                     state.liveBuffer += key;
-                    lcd.innerText = state.liveBuffer.slice(-12);
+                    lcd.innerText = state.liveBuffer.slice(-16);
                 }
                 updateMemIndicator();
             } else {
-                // Calculator Logic
                 const digits = ['0','1','2','3','4','5','6','7','8','9','.'];
                 const operators = ['+', '-', '*', '/', 'x'];
 
@@ -649,47 +666,40 @@
                     try { 
                         let raw = eval(state.calcInput.replace(/x/g, '*'));
                         state.calcInput = parseFloat(raw.toFixed(10)).toString(); 
-                        lcd.innerText = state.calcInput; 
+                        lcd.innerText = state.calcInput.slice(-16); 
                         state.isResultDisplayed = true;
                     }
                     catch { lcd.innerText = "ERROR"; state.calcInput = ""; }
                 } 
                 else if (digits.includes(key)) {
-                    // Start fresh if a result was just shown
                     if (state.isResultDisplayed) {
                         state.calcInput = key;
                         state.isResultDisplayed = false;
                     } else {
                         state.calcInput += key;
                     }
-                    lcd.innerText = state.calcInput.slice(-12);
+                    lcd.innerText = state.calcInput.slice(-16);
                 }
                 else if (operators.includes(key)) {
-                    // Continue from result if operator is pressed
                     state.isResultDisplayed = false;
                     state.calcInput += key;
-                    lcd.innerText = state.calcInput.slice(-12);
+                    lcd.innerText = state.calcInput.slice(-16);
                 }
             }
         }
 
         function setButtonsState(disabled) {
-            // FIX: Only disable buttons inside the main #viewport, ignoring the modals entirely.
             const allButtons = document.querySelectorAll('#viewport button:not(#play-btn)');
             allButtons.forEach(btn => btn.disabled = disabled);
         }
 
-        // Requirement 2: Special key with visual sync (play button turns green)
         async function playSpecial() {
             if (state.isPlaying || !state.isMusic) return;
             state.isPlaying = true;
             setButtonsState(true);
             
-            // Requirement 2: Add play-active class to play button
             const playBtn = document.getElementById('play-btn');
             playBtn.classList.add('play-active');
-            
-            // Requirement 5: Dim all keys during playback
             mainGrid.classList.add('dim-keys');
 
             const sequence = "4599.845887..4599.845887.6..4599.845887..4599.845887.6..44284.44284.44284.44284...........";
@@ -699,14 +709,14 @@
             const delay = 150;
 
             const ticker = setInterval(() => {
-                const display = (fullLyrics + "          ").substring(lyricIdx, lyricIdx + 12);
+                const display = (fullLyrics + "                ").substring(lyricIdx, lyricIdx + 16);
                 lcd.innerText = display;
                 lyricIdx++;
                 if (lyricIdx > fullLyrics.length) lyricIdx = 0;
             }, 180);
 
             for (let char of sequence) {
-                if (!state.isPlaying) break; // Allows interruption via the play button
+                if (!state.isPlaying) break; 
                 if (char !== '.') {
                     playNote(char);
                     const btn = document.querySelector(`button[data-key="${char}"]`);
@@ -720,20 +730,13 @@
 
             clearInterval(ticker);
             state.isPlaying = false;
-            
-            // Requirement 2: Remove play-active class when done
             playBtn.classList.remove('play-active');
-            
-            // Requirement 5: Remove dimming
             mainGrid.classList.remove('dim-keys');
-            
             setButtonsState(false);
             lcd.innerText = "TECHNOPOP";
         }
 
-        // Requirement 3 & 4: Updated playSequence with slot support and looping
         async function playSequence() {
-            // Act as a universal stop button if anything is playing
             if (state.isPlaying) { 
                 state.isPlaying = false; 
                 return; 
@@ -744,15 +747,11 @@
             
             state.isPlaying = true;
             const playBtn = document.getElementById('play-btn');
-            playBtn.classList.add('play-active');
+            playBtn.classList.add('play-pulsing'); // Flash green styling added here
             setButtonsState(true);
             
-            // Requirement 5: Dim all keys during playback
             mainGrid.classList.add('dim-keys');
-            
             const delay = 400 / state.speed;
-            
-            // Requirement 4: Loop the sequence based on loopCount
             const totalRuns = state.isLooping ? state.loopCount : 1;
             
             for (let run = 0; run < totalRuns; run++) {
@@ -762,7 +761,6 @@
                     if (!state.isPlaying) break;
                     const char = currentMemory[i];
                     
-                    // Show progress with run number if looping
                     if (state.isLooping) {
                         lcd.innerText = `Loop ${run+1}/${totalRuns} ${i+1}/${currentMemory.length}`;
                     } else {
@@ -779,15 +777,11 @@
             }
 
             state.isPlaying = false;
-            playBtn.classList.remove('play-active');
-            
-            // Requirement 5: Remove dimming
+            playBtn.classList.remove('play-pulsing');
             mainGrid.classList.remove('dim-keys');
-            
             setButtonsState(false);
             lcd.innerText = "TECHNOPOP";
             
-            // Requirement 4: Reset loop if it was a one-time loop
             if (state.isLooping) {
                 state.isLooping = false;
                 state.loopCount = 1;
@@ -797,7 +791,6 @@
             }
         }
 
-        // Requirement 1: Updated toggleRecord with pulsing border
         function toggleRecord() { 
             if (!state.isMusic) return; 
             state.isRecording = !state.isRecording; 
@@ -807,17 +800,26 @@
                 state.memories[state.currentSlot] = []; 
                 state.liveBuffer = "";
                 btn.classList.add('rec-active');
-                btn.classList.add('rec-pulsing');  // Requirement 1: Add pulsing animation
+                btn.classList.add('rec-pulsing');
                 lcd.innerText = "REC [0]"; 
             } else { 
                 btn.classList.remove('rec-active');
-                btn.classList.remove('rec-pulsing');  // Requirement 1: Remove pulsing animation
+                btn.classList.remove('rec-pulsing');
                 lcd.innerText = "SAVED"; 
             } 
+            
+            // Disable other buttons while recording
+            const isRec = state.isRecording;
+            document.getElementById('play-btn').disabled = isRec;
+            document.getElementById('mode-btn').disabled = isRec;
+            document.getElementById('spd-btn').disabled = isRec;
+            document.getElementById('special-btn').disabled = isRec;
+            document.getElementById('io-btn').disabled = isRec;
+            document.getElementById('loop-btn').disabled = isRec;
+
             updateMemIndicator(); 
         }
 
-        // Requirement 3: Updated clearAll to work with current slot
         function clearAll() { 
             state.calcInput = ""; 
             state.memories[state.currentSlot] = []; 
@@ -832,12 +834,10 @@
             state.liveBuffer = "";
             state.isResultDisplayed = false;
             
-            // UI Updates
             document.getElementById('mode-btn').innerText = state.isMusic ? "CALC" : "MUSIC"; 
             modeMarker.innerText = state.isMusic ? "Music Mode" : "Calculator Mode";
             document.getElementById('ac-del-btn').querySelector('span').innerText = state.isMusic ? "Del Rec" : "AC";
             
-            // Enable/Disable buttons based on mode
             document.querySelectorAll('.mode-dep').forEach(btn => btn.disabled = !state.isMusic); 
             document.getElementById('io-btn').disabled = !state.isMusic;
             document.getElementById('special-btn').disabled = !state.isMusic;
@@ -847,20 +847,18 @@
 
         function toggleTheme() { state.themeIdx = (state.themeIdx + 1) % state.themes.length; document.body.setAttribute('data-theme', state.themes[state.themeIdx]); }
         
-        // Requirement 3: Updated undoLast to work with current slot
         function undoLast() { 
             if (state.isMusic) {
                 const currentMemory = state.memories[state.currentSlot];
                 if (state.isRecording && currentMemory.length > 0) { 
                     currentMemory.pop(); 
-                    lcd.innerText = `[${currentMemory.length}] ${currentMemory.join('').slice(-8)}`; 
+                    lcd.innerText = `[${currentMemory.length}] ${currentMemory.join('').slice(-16)}`; 
                 } else { 
                     state.liveBuffer = state.liveBuffer.slice(0, -1); 
-                    lcd.innerText = state.liveBuffer.slice(-12) || "TECHNOPOP"; 
+                    lcd.innerText = state.liveBuffer.slice(-16) || "TECHNOPOP"; 
                 } 
                 updateMemIndicator();
             } else {
-                // Calculator backspace
                 state.calcInput = state.calcInput.toString().slice(0, -1);
                 lcd.innerText = state.calcInput || "0";
                 state.isResultDisplayed = false;
@@ -869,14 +867,12 @@
 
         function cycleSpeed() { if (!state.isMusic) return; const spds = [0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4]; let idx = spds.indexOf(state.speed); state.speed = spds[(idx + 1) % spds.length]; document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x'; }
         
-        // Requirement 3: Updated showIO to work with current slot
         function showIO() { 
             if (!state.isMusic) return;
             document.getElementById('modal-io').style.display = 'flex'; 
             document.getElementById('io-textarea').value = state.memories[state.currentSlot].join(''); 
         }
         
-        // Requirement 3: Updated importSequence to work with current slot
         function importSequence() { 
             let val = document.getElementById('io-textarea').value; 
             val = val.replace(/x/g, '*');
@@ -888,6 +884,88 @@
                 closeModals(); 
                 lcd.innerText = "TECHNOPOP";
             }, 800);
+        }
+
+        function shareMusic() {
+            const seq = state.memories[state.currentSlot].join('');
+            const btn = document.getElementById('share-btn');
+            if (!seq) {
+                const oldText = btn.innerText;
+                btn.innerText = "EMPTY SLOT!";
+                setTimeout(() => btn.innerText = oldText, 2000);
+                return;
+            }
+            const url = "https://hrauto2026.github.io/technopopcalculator/?seq=" + encodeURIComponent(seq);
+            const copyArea = document.createElement("textarea");
+            copyArea.value = url;
+            document.body.appendChild(copyArea);
+            copyArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(copyArea);
+            
+            const oldText = btn.innerText;
+            btn.innerText = "LINK COPIED!";
+            setTimeout(() => btn.innerText = oldText, 2000);
+        }
+
+        function exportMidi() {
+            const sequence = state.memories[state.currentSlot];
+            const btn = document.getElementById('midi-btn');
+            
+            if (!sequence || sequence.length === 0) {
+                const oldText = btn.innerText;
+                btn.innerText = "EMPTY SLOT!";
+                setTimeout(() => btn.innerText = oldText, 2000);
+                return;
+            }
+
+            // Midi generation
+            const midiMap = { '1':60, '2':62, '3':64, '4':65, '5':67, '6':69, '7':71, '8':72, '9':74, '/':76, '*':77, '-':79, '+':81, '0':83, '=':84, 'Enter':84 };
+            let trackData = [];
+            
+            function writeVarLen(val) {
+                let buf = [val & 0x7f];
+                while ((val >>= 7) > 0) buf.unshift((val & 0x7f) | 0x80);
+                return buf;
+            }
+
+            let currentDelta = 0;
+            const ticksPerNote = 96; 
+            
+            for (let i = 0; i < sequence.length; i++) {
+                let char = sequence[i] === 'Enter' ? '=' : sequence[i];
+                if (char === '.') {
+                    currentDelta += ticksPerNote;
+                } else if (midiMap[char]) {
+                    trackData.push(...writeVarLen(currentDelta));
+                    trackData.push(0x90, midiMap[char], 0x40); // Note On
+                    trackData.push(...writeVarLen(72)); // duration
+                    trackData.push(0x80, midiMap[char], 0x00); // Note Off
+                    currentDelta = ticksPerNote - 72;
+                }
+            }
+            
+            trackData.push(...writeVarLen(currentDelta));
+            trackData.push(0xFF, 0x2F, 0x00); // End of track
+
+            let header = [0x4D,0x54,0x68,0x64, 0x00,0x00,0x00,0x06, 0x00,0x00, 0x00,0x01, 0x00,0x60];
+            let trackHeader = [0x4D,0x54,0x72,0x6B];
+            let trackLen = trackData.length;
+            trackHeader.push((trackLen >> 24) & 0xFF, (trackLen >> 16) & 0xFF, (trackLen >> 8) & 0xFF, trackLen & 0xFF);
+
+            let midiBytes = new Uint8Array(header.concat(trackHeader, trackData));
+            let blob = new Blob([midiBytes], {type: "audio/midi"});
+            let url = URL.createObjectURL(blob);
+            
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = `technopop_sequence_slot${state.currentSlot+1}.mid`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            const oldText = btn.innerText;
+            btn.innerText = "DOWNLOADED!";
+            setTimeout(() => btn.innerText = oldText, 2000);
         }
 
         function showHowTo() { document.getElementById('modal-how').style.display = 'flex'; }
