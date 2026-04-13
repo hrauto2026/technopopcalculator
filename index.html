@@ -758,7 +758,7 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             
             // --- NEW: Load synth settings from URL ---
@@ -790,6 +790,17 @@
                 btn.style.background = "var(--accent-orange)";
                 btn.style.color = "#000";
             }
+            
+            // --- NEW: Load speed setting from URL ---
+            const speedParam = urlParams.get('speed');
+            if (speedParam) {
+                const parsedSpeed = parseFloat(speedParam);
+                const validSpeeds = [0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
+                if (validSpeeds.includes(parsedSpeed)) {
+                    state.speed = parsedSpeed;
+                    document.getElementById('spd-btn').querySelector('.btn-text').innerText = state.speed + 'x';
+                }
+            }
             // -----------------------------------------
 
             const seq = urlParams.get('seq');
@@ -801,7 +812,6 @@
                 document.getElementById('play-btn').classList.add('attention-pulse');
             }
         });
-
         function updateMemIndicator() {
             state.memories.forEach((mem, index) => {
                 const marker = document.getElementById(`mem-marker-${index}`);
@@ -1249,7 +1259,7 @@
             }, 800);
         }
 
-        function shareMusic() {
+function shareMusic() {
             const seq = state.memories[state.currentSlot].join('');
             const btn = document.getElementById('share-btn');
             if (!seq) {
@@ -1259,15 +1269,17 @@
                 return;
             }
             
-            // Generate link with synth parameter states appended
+            // Generate link with synth parameter states and speed appended
             const envParam = state.isAdsr ? 'adsr' : 'sharp';
             const waveParam = state.waveform;
             const lofiParam = state.isLofi ? 'on' : 'off';
+            const speedParam = state.speed;
             
             const url = "https://hrauto2026.github.io/technopopcalculator/?seq=" + encodeURIComponent(seq) +
                         "&env=" + envParam +
                         "&wave=" + waveParam +
-                        "&lofi=" + lofiParam;
+                        "&lofi=" + lofiParam +
+                        "&speed=" + speedParam;
                         
             const copyArea = document.createElement("textarea");
             copyArea.value = url;
