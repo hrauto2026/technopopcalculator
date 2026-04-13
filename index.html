@@ -171,6 +171,14 @@
             flex-grow: 1;
         }
 
+        .synth-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
         button {
             border: none;
             border-radius: 12px;
@@ -199,11 +207,9 @@
         .btn-text { font-size: 24px; font-weight: bold; color: var(--btn-font-color); transition: color 0.15s; }
         .solfege { font-size: 13px; text-transform: lowercase; margin-top: 2px; color: var(--btn-font-color); font-weight: bold; opacity: 0.7; transition: color 0.15s; }
 
-        /* Requirement 1: Increased Utility and Footer Buttons by ~50% */
         .btn-util { background: var(--btn-special); color: white; height: 50px; font-size: 15px; font-weight: bold; box-shadow: 0 4px #222; text-align: center; line-height: 1.1; }
         #mode-btn { background: var(--mode-btn-bg) !important; color: #333 !important; box-shadow: 0 4px #b2b28f; }
         
-        /* Requirement 2: PLAY MEM default styling */
         #play-btn { background: var(--accent-orange) !important; color: #000 !important; }
 
         .btn-num { background: var(--btn-num); height: 100%; }
@@ -218,7 +224,6 @@
             animation: rec-pulse 1s ease-in-out infinite;
         }
 
-        /* Requirement 2: Playback Green Flash (Border + Font) */
         @keyframes play-pulse {
             0%, 100% { border: 3px solid transparent; box-shadow: 0 4px #222; color: #000 !important; }
             50% { border: 3px solid #39FF14; box-shadow: 0 4px #222, 0 0 15px rgba(57, 255, 20, 0.8); color: #39FF14 !important; }
@@ -229,7 +234,6 @@
             background: var(--accent-orange) !important;
         }
 
-        /* Requirement 3: Shared Link Blue Flash */
         @keyframes blue-pulse {
             0%, 100% { border: 3px solid transparent; box-shadow: 0 4px #222; color: #000 !important; }
             50% { border: 3px solid #00aaff; box-shadow: 0 4px #222, 0 0 15px rgba(0, 170, 255, 0.8); color: #00aaff !important; }
@@ -266,14 +270,13 @@
         }
 
         .footer {
-            margin-top: 20px;
+            margin-top: 5px;
             padding-bottom: 10px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
-        /* Requirement 1: Increased footer button font size */
         .btn-footer { height: 50px; color: white; font-weight: bold; border-radius: 15px; font-size: 16.5px; text-align: center; line-height: 1.1; padding: 0 5px; }
         .btn-how { background: #333; }
         .btn-special-key { background: #bbb; color: #333; box-shadow: 0 5px #777; border: 2px solid #555; }
@@ -387,18 +390,26 @@
             <button class="btn-op control-btn" data-key="Enter" onclick="handleInput('=')"><span class="btn-text">=</span><span class="solfege">do³</span></button>
             <button class="btn-op control-btn" data-key="+" onclick="handleInput('+')"><span class="btn-text">+</span><span class="solfege">la²</span></button>
 
-            <!-- Requirement 1: Increased Control button font sizes -->
+            <!-- Control Row -->
             <button class="btn-op control-btn" onclick="undoLast()" style="background:#bbb"><span class="btn-text" style="font-size:16.5px; line-height:1.1; white-space:normal; text-align:center;">RETURN</span></button>
             <button class="btn-num control-btn" id="ac-del-btn" onclick="clearAll()" style="background:#eee"><span class="btn-text" style="font-size:18px; line-height:1.1; white-space:normal; text-align:center;">Del Rec</span></button>
             <button class="btn-op mode-dep control-btn" onclick="cycleSpeed()" id="spd-btn" style="background:#bbb"><span class="btn-text" style="font-size:18px">2x</span><span class="solfege">Speed</span></button>
             <button class="btn-op control-btn" id="io-btn" onclick="showIO()" style="background:#bbb"><span class="btn-text" style="font-size:21px; line-height:1.1;">IO</span></button>
         </div>
 
+        <!-- NEW SYNTH CONTROL ROW -->
+        <div class="synth-grid">
+            <button class="btn-util mode-dep" id="bass-btn" onclick="toggleBass()" style="height: 45px; font-size: 12px; background: #666;">BASS: OFF</button>
+            <button class="btn-util mode-dep" id="env-btn" onclick="toggleEnv()" style="height: 45px; font-size: 12px; background: #666;">ENV: SHARP</button>
+            <button class="btn-util mode-dep" id="wave-btn" onclick="cycleWave()" style="height: 45px; font-size: 12px; background: #666;">WAVE: SQ</button>
+            <button class="btn-util mode-dep" id="lofi-btn" onclick="toggleLofi()" style="height: 45px; font-size: 12px; background: #666;">LO-FI: OFF</button>
+        </div>
+
         <div class="footer">
             <button class="btn-footer btn-how" onclick="showHowTo()">MANUAL</button>
             <button class="btn-footer" onclick="toggleTheme()" style="background:#666">THEME</button>
         </div>
-        <div class="footer" style="margin-top: 10px;">
+        <div class="footer" style="margin-top: 5px;">
             <button class="btn-footer btn-special-key" id="special-btn" onclick="playSpecial()">SPECIAL KEY</button>
             <button class="btn-footer mode-dep" id="loop-btn" onclick="toggleLoop()" style="background:#555">Loop Off</button>
         </div>
@@ -406,7 +417,7 @@
 
     <div id="modal-io" class="modal">
         <h3>Memory Data Transfer</h3>
-        <p style="font-size: 11px; opacity: 0.7; margin-top: -10px;">Edit sequence below (0-9, +, -, x, /, .)</p>
+        <p style="font-size: 11px; opacity: 0.7; margin-top: -10px;">Edit sequence below (0-9, a-o, +, -, x, /, .)</p>
         <textarea id="io-textarea" placeholder="Paste or type sequence..."></textarea>
         <div class="modal-btns">
             <button class="btn-dialog" onclick="copyToClipboard()">COPY</button>
@@ -459,8 +470,17 @@
                         • <strong>Programming:</strong> You can paste sequences directly into the text area and press <strong>[IMPORT MEM]</strong> to load external compositions.</p>
                     </section>
 
+                    <section style="background: rgba(144, 238, 144, 0.1); padding: 10px; border-left: 3px solid #90EE90;">
+                        <strong style="display: block; color: #90EE90; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. Synthesizer Controls</strong>
+                        <p style="margin: 0;">New synthesis engine features are available directly below the main keypad:<br><br>
+                        • <strong>BASS:</strong> Shifts the keyboard down one octave. Bass notes are recorded using letters (a-o), allowing dynamic dual-octave tracking within the same sequence.<br>
+                        • <strong>ENV (Envelope):</strong> Toggles between SHARP (a hard percussive click) and ADSR (smooth attack and dreamy release).<br>
+                        • <strong>WAVE:</strong> Cycles the main oscillator waveform through SQ (Square), SAW (Sawtooth), and SINE (Sine).<br>
+                        • <strong>LO-FI:</strong> Activates an aggressive bitcrusher/distortion wave-shaper effect for a gritty industrial tone.</p>
+                    </section>
+
                     <section style="background: rgba(255,102,0,0.1); padding: 10px; border-left: 3px solid var(--accent-orange);">
-                        <strong style="display: block; color: var(--accent-orange); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. The "Special Key" Tribute</strong>
+                        <strong style="display: block; color: var(--accent-orange); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">06. The "Special Key" Tribute</strong>
                         <p style="margin: 0; font-size: 12px;">The <strong>[SPECIAL KEY]</strong> is an homage to the electronic music pioneers <strong>Kraftwerk</strong> and their 1981 track <em>"<a href="https://www.youtube.com/watch?v=_dt7RJGpPhg" style="color: #ff6600;" target="_blank">Pocket Calculator</a>"</em>. As the lyrics suggest: <br><em>"By pressing down a special key, it plays a little melody."</em><br> Press it to hear the classic theme accompanied by scrolling lyrics on the LCD.</p>
                     </section>
                 </div>
@@ -494,13 +514,22 @@
                         • <strong>編程輸入：</strong>你可以喺文字框直接打音符編碼（例如 "1231"），然後撳 <strong>[IMPORT MEM]</strong> 載入。</p>
                     </section>
 
+                    <section style="background: rgba(144, 238, 144, 0.1); padding: 10px; border-left: 3px solid #90EE90;">
+                        <strong style="display: block; color: #90EE90; text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. 合成器控制面板</strong>
+                        <p style="margin: 0;">鍵盤下方新增了四個專業合成器控制功能：<br><br>
+                        • <strong>BASS（低音）：</strong> 將琴鍵降低一個八度。低音音符會以 a-o 記錄，讓你可喺同一個 Sequence 入面創作雙八度嘅樂曲。<br>
+                        • <strong>ENV（包絡線）：</strong> 在 SHARP（清脆點擊聲）同 ADSR（平滑漸入及夢幻般嘅餘音）之間切換。<br>
+                        • <strong>WAVE（波形）：</strong> 切換主振盪器波形：SQ（方波）、SAW（鋸齒波）或 SINE（正弦波）。<br>
+                        • <strong>LO-FI（低保真）：</strong> 開啟極具破壞感嘅失真 / Bitcrusher 效果，製造出粗獷、復古工業風嘅電子音色。</p>
+                    </section>
+
                     <section style="background: rgba(255,102,0,0.1); padding: 10px; border-left: 3px solid var(--accent-orange);">
-                        <strong style="display: block; color: var(--accent-orange); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">05. 「SPECIAL KEY」的故事</strong>
+                        <strong style="display: block; color: var(--accent-orange); text-transform: uppercase; font-size: 14px; margin-bottom: 5px;">06. 「SPECIAL KEY」的故事</strong>
                         <p style="margin: 0; font-size: 12px;"><strong>[SPECIAL KEY]</strong> 係向電子樂先驅 <strong>Kraftwerk</strong> 致敬。喺佢哋 1981 年嘅名曲 <em>"<a href="https://www.youtube.com/watch?v=_dt7RJGpPhg" style="color: #ff6600;" target="_blank">Pocket Calculator</a>"</em> 入面提到：<br>「By pressing down a special key, it plays a little melody」<br>撳下呢個掣，你就會聽到嗰段經典旋律，LCD 仲會同步顯示歌詞。</p>
                     </section>
                 </div>
 
-                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP Calculator Version 2.31 / RS2026 / <a href="https://www.threads.com/@cheaplad60" style="color: #ff6600;" target="_blank">Cheaplad's Threads</a></footer>
+                <footer style="margin-top: 30px; text-align: center; opacity: 0.5; font-size: 10px;">© 2026 TECHNOPOP Calculator Version 3.1 / RS2026 / <a href="https://www.threads.com/@cheaplad60" style="color: #ff6600;" target="_blank">Cheaplad's Threads</a></footer>
             </div>
         </div>
         <button class="btn-dialog" onclick="closeModals()" style="width:100%; margin-top:20px; background: var(--accent-orange); color: #000;">CLOSE / 關閉</button>
@@ -524,12 +553,36 @@
     </div>
 
     <script>
-        // version 2.3
+        // version 3.1 - Advanced Synth Update + Fixes
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Frequencies now contain both mid octave (numbers/symbols) and bass octave (letters)
         const frequencies = {
+            'a': 130.81, 'b': 146.83, 'c': 164.81, 'd': 174.61, 'e': 196.00, 
+            'f': 220.00, 'g': 246.94, 'h': 261.63, 'i': 293.66, 'j': 329.63, 
+            'k': 349.23, 'l': 392.00, 'm': 440.00, 'n': 493.88, 'o': 523.25,
             '1': 261.63, '2': 293.66, '3': 329.63, '4': 349.23, '5': 392.00, '6': 440.00, '7': 493.88,
             '8': 523.25, '9': 587.33, '0': 987.77, '/': 659.25, '*': 698.46, '-': 783.99, '+': 880.00, '=': 1046.50
         };
+
+        const bassMap = {'1':'a', '2':'b', '3':'c', '4':'d', '5':'e', '6':'f', '7':'g', '8':'h', '9':'i', '/':'j', '*':'k', '-':'l', '+':'m', '0':'n', '=':'o', 'Enter':'o'};
+        const reverseBassMap = {'a':'1', 'b':'2', 'c':'3', 'd':'4', 'e':'5', 'f':'6', 'g':'7', 'h':'8', 'i':'9', 'j':'/', 'k':'*', 'l':'-', 'm':'+', 'n':'0', 'o':'='};
+
+        // Initialize Lo-Fi WaveShaper globally
+        let lofiNode = null;
+        function makeDistortionCurve(amount) {
+            let k = typeof amount === 'number' ? amount : 50,
+            n_samples = 44100,
+            curve = new Float32Array(n_samples),
+            deg = Math.PI / 180,
+            i = 0,
+            x;
+            for ( ; i < n_samples; ++i ) {
+                x = i * 2 / n_samples - 1;
+                curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+            }
+            return curve;
+        }
 
         let state = {
             isMusic: true,
@@ -545,7 +598,11 @@
             themes: ['retro', 'city-pop', 'stealth'],
             themeIdx: 0,
             isLooping: false,
-            loopCount: 1
+            loopCount: 1,
+            isBass: false,
+            isAdsr: false,
+            waveform: 'square',
+            isLofi: false
         };
 
         let tempLoopCount = 1;
@@ -554,7 +611,6 @@
         const modeMarker = document.getElementById('lcd-mode-marker');
         const mainGrid = document.getElementById('main-grid');
 
-        // Requirement 3: Clear attention pulse on interaction
         function clearAttention() {
             const playBtn = document.getElementById('play-btn');
             if(playBtn.classList.contains('attention-pulse')) {
@@ -565,9 +621,40 @@
             }
         }
 
-        // Requirement 3: Check for Shared Music link parameters upon startup and pulse blue
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
+            
+            // --- NEW: Load synth settings from URL ---
+            const envParam = urlParams.get('env');
+            if (envParam === 'adsr') {
+                state.isAdsr = true;
+                const btn = document.getElementById('env-btn');
+                btn.innerText = "ENV: ADSR";
+                btn.style.background = "var(--sakura-pink)";
+                btn.style.color = "#000";
+            }
+
+            const waveParam = urlParams.get('wave');
+            if (['square', 'sawtooth', 'sine'].includes(waveParam)) {
+                state.waveform = waveParam;
+                const waveBtn = document.getElementById('wave-btn');
+                const labels = { 'square': 'SQ', 'sawtooth': 'SAW', 'sine': 'SINE' };
+                waveBtn.innerText = "WAVE: " + labels[waveParam];
+                if (waveParam === 'square') { waveBtn.style.background = "#666"; waveBtn.style.color = "#fff"; }
+                else if (waveParam === 'sawtooth') { waveBtn.style.background = "#ff3b30"; waveBtn.style.color = "#fff"; }
+                else { waveBtn.style.background = "#00aaff"; waveBtn.style.color = "#fff"; }
+            }
+
+            const lofiParam = urlParams.get('lofi');
+            if (lofiParam === 'on') {
+                state.isLofi = true;
+                const btn = document.getElementById('lofi-btn');
+                btn.innerText = "LO-FI: ON";
+                btn.style.background = "var(--accent-orange)";
+                btn.style.color = "#000";
+            }
+            // -----------------------------------------
+
             const seq = urlParams.get('seq');
             if (seq) {
                 const valid = Object.keys(frequencies).concat(['.']); 
@@ -578,7 +665,6 @@
             }
         });
 
-        // Update permanent memory indicators
         function updateMemIndicator() {
             state.memories.forEach((mem, index) => {
                 const marker = document.getElementById(`mem-marker-${index}`);
@@ -586,6 +672,23 @@
                     marker.classList.add('active');
                 } else {
                     marker.classList.remove('active');
+                }
+            });
+        }
+
+        function updateButtonLabels() {
+            const keysToUpdate = ['1','2','3','4','5','6','7','8','9','0','/','*','-','+','='];
+            keysToUpdate.forEach(k => {
+                const btnElement = document.querySelector(`button[data-key="${k}"]`);
+                if (btnElement) {
+                    const textSpan = btnElement.querySelector('.btn-text');
+                    if (textSpan) {
+                        if (state.isMusic && state.isBass) {
+                            textSpan.innerText = bassMap[k] || k;
+                        } else {
+                            textSpan.innerText = k;
+                        }
+                    }
                 }
             });
         }
@@ -603,6 +706,50 @@
             }, 1000);
         }
 
+        /* Synth Control Functions */
+        function toggleBass() {
+            if (!state.isMusic) return;
+            state.isBass = !state.isBass;
+            const btn = document.getElementById('bass-btn');
+            btn.innerText = state.isBass ? "BASS: ON" : "BASS: OFF";
+            btn.style.background = state.isBass ? "var(--shocking-green)" : "#666";
+            btn.style.color = state.isBass ? "#000" : "#fff";
+            updateButtonLabels();
+        }
+
+        function toggleEnv() {
+            if (!state.isMusic) return;
+            state.isAdsr = !state.isAdsr;
+            const btn = document.getElementById('env-btn');
+            btn.innerText = state.isAdsr ? "ENV: ADSR" : "ENV: SHARP";
+            btn.style.background = state.isAdsr ? "var(--sakura-pink)" : "#666";
+            btn.style.color = state.isAdsr ? "#000" : "#fff";
+        }
+
+        function cycleWave() {
+            if (!state.isMusic) return;
+            const waves = ['square', 'sawtooth', 'sine'];
+            const labels = ['SQ', 'SAW', 'SINE'];
+            let idx = waves.indexOf(state.waveform);
+            idx = (idx + 1) % waves.length;
+            state.waveform = waves[idx];
+            
+            const btn = document.getElementById('wave-btn');
+            btn.innerText = "WAVE: " + labels[idx];
+            if (state.waveform === 'square') { btn.style.background = "#666"; btn.style.color = "#fff"; }
+            else if (state.waveform === 'sawtooth') { btn.style.background = "#ff3b30"; btn.style.color = "#fff"; }
+            else { btn.style.background = "#00aaff"; btn.style.color = "#fff"; }
+        }
+
+        function toggleLofi() {
+            if (!state.isMusic) return;
+            state.isLofi = !state.isLofi;
+            const btn = document.getElementById('lofi-btn');
+            btn.innerText = state.isLofi ? "LO-FI: ON" : "LO-FI: OFF";
+            btn.style.background = state.isLofi ? "var(--accent-orange)" : "#666";
+            btn.style.color = state.isLofi ? "#000" : "#fff";
+        }
+
         function toggleLoop() {
             clearAttention();
             if (!state.isMusic) return;
@@ -610,7 +757,7 @@
             
             if (!state.isLooping) {
                 setButtonsState(true);
-                tempLoopCount = 1; // Default back to No loop visually
+                tempLoopCount = 1; 
                 updateLoopUI();
                 document.getElementById('loop-modal').style.display = 'block';
             } else {
@@ -657,34 +804,74 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const freq = frequencies[char];
             if (!freq) return;
+
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            const now = audioCtx.currentTime;
+
+            osc.type = state.waveform || 'square';
+            osc.frequency.setValueAtTime(freq, now);
+
+            // Apply Envelope
+            if (state.isAdsr) {
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.02); // Attack
+                gain.gain.exponentialRampToValueAtTime(0.1, now + 0.12); // Decay
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5); // Release
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else {
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3); // Sharp Decay
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+
+            // CRITICAL FIX: Oscillator must be connected to the gain node
             osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+            let outputNode = gain;
+
+            // Apply Lo-Fi Distortion
+            if (state.isLofi) {
+                if (!lofiNode) {
+                    lofiNode = audioCtx.createWaveShaper();
+                    lofiNode.curve = makeDistortionCurve(100);
+                    lofiNode.oversample = 'none';
+                    lofiNode.connect(audioCtx.destination);
+                }
+                outputNode.connect(lofiNode);
+            } else {
+                outputNode.connect(audioCtx.destination);
+            }
         }
 
         function handleInput(key) {
             clearAttention();
             if (state.isPlaying) return;
 
-            const noteVal = key === 'Enter' ? '=' : key;
+            let noteVal = key === 'Enter' ? '=' : key;
+            let storeVal = key;
+
+            // Apply Bass Mapping if active in Music mode
+            if (state.isMusic && state.isBass && bassMap[key]) {
+                noteVal = bassMap[key];
+                storeVal = bassMap[key];
+            } else if (state.isMusic && state.isBass && key === 'Enter') {
+                noteVal = bassMap['Enter'];
+                storeVal = bassMap['Enter'];
+            }
+
             if (key !== '.') playNote(noteVal);
 
             if (state.isMusic) {
                 const currentMemory = state.memories[state.currentSlot];
                 if (state.isRecording) {
                     if (currentMemory.length < state.maxMem) {
-                        currentMemory.push(key);
+                        currentMemory.push(storeVal);
                         lcd.innerText = `[${currentMemory.length}] ${currentMemory.join('').slice(-16)}`;
                     }
                 } else {
-                    state.liveBuffer += key;
+                    state.liveBuffer += storeVal;
                     lcd.innerText = state.liveBuffer.slice(-16);
                 }
                 updateMemIndicator();
@@ -730,7 +917,6 @@
             setButtonsState(true);
             
             const playBtn = document.getElementById('play-btn');
-            // Requirement 2: Play Special now uses the play-pulsing animation (green)
             playBtn.classList.add('play-pulsing');
             mainGrid.classList.add('dim-keys');
 
@@ -749,9 +935,12 @@
 
             for (let char of sequence) {
                 if (!state.isPlaying) break; 
+                
+                const visualChar = reverseBassMap[char] || char;
+
                 if (char !== '.') {
                     playNote(char);
-                    const btn = document.querySelector(`button[data-key="${char}"]`);
+                    const btn = document.querySelector(`button[data-key="${visualChar}"]`);
                     if (btn) {
                         btn.classList.add('sparkle-active');
                         setTimeout(() => btn.classList.remove('sparkle-active'), delay - 20);
@@ -780,7 +969,6 @@
             
             state.isPlaying = true;
             const playBtn = document.getElementById('play-btn');
-            // Requirement 2: Green flashing pulse is triggered
             playBtn.classList.add('play-pulsing');
             setButtonsState(true);
             
@@ -801,8 +989,9 @@
                         lcd.innerText = `P ${i+1}/${currentMemory.length}`;
                     }
                     
-                    const visualChar = char === 'Enter' ? '=' : char;
+                    const visualChar = reverseBassMap[char] || (char === 'Enter' ? '=' : char);
                     const btn = document.querySelector(`button[data-key="${visualChar}"]`);
+                    
                     if (btn) btn.classList.add('sparkle-active');
                     if (char !== '.') playNote(char);
                     await new Promise(r => setTimeout(r, delay));
@@ -843,7 +1032,6 @@
                 lcd.innerText = "SAVED"; 
             } 
             
-            // Disable other buttons while recording
             const isRec = state.isRecording;
             document.getElementById('play-btn').disabled = isRec;
             document.getElementById('mode-btn').disabled = isRec;
@@ -879,6 +1067,7 @@
             document.getElementById('io-btn').disabled = !state.isMusic;
             document.getElementById('special-btn').disabled = !state.isMusic;
 
+            updateButtonLabels();
             clearAll(); 
         }
 
@@ -932,7 +1121,17 @@
                 setTimeout(() => btn.innerText = oldText, 2000);
                 return;
             }
-            const url = "https://hrauto2026.github.io/technopopcalculator/?seq=" + encodeURIComponent(seq);
+            
+            // Generate link with synth parameter states appended
+            const envParam = state.isAdsr ? 'adsr' : 'sharp';
+            const waveParam = state.waveform;
+            const lofiParam = state.isLofi ? 'on' : 'off';
+            
+            const url = "https://hrauto2026.github.io/technopopcalculator/?seq=" + encodeURIComponent(seq) +
+                        "&env=" + envParam +
+                        "&wave=" + waveParam +
+                        "&lofi=" + lofiParam;
+                        
             const copyArea = document.createElement("textarea");
             copyArea.value = url;
             document.body.appendChild(copyArea);
@@ -956,8 +1155,12 @@
                 return;
             }
 
-            // Midi generation
-            const midiMap = { '1':60, '2':62, '3':64, '4':65, '5':67, '6':69, '7':71, '8':72, '9':74, '/':76, '*':77, '-':79, '+':81, '0':83, '=':84, 'Enter':84 };
+            // Midi generation (Added mappings for bass track letters a-o)
+            const midiMap = { 
+                'a':48, 'b':50, 'c':52, 'd':53, 'e':55, 'f':57, 'g':59, 'h':60, 'i':62, 'j':64, 'k':65, 'l':67, 'm':69, 'n':71, 'o':72,
+                '1':60, '2':62, '3':64, '4':65, '5':67, '6':69, '7':71, '8':72, '9':74, '/':76, '*':77, '-':79, '+':81, '0':83, '=':84, 'Enter':84 
+            };
+            
             let trackData = [];
             
             function writeVarLen(val) {
@@ -1012,13 +1215,21 @@
 
         window.addEventListener('keydown', (e) => {
             if (state.isPlaying) return;
-            if (e.target.tagName === 'TEXTAREA') return;
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
 
             let key = e.key;
+            let lowerKey = key.toLowerCase(); // Handle uppercase gracefully
+
             if ((key >= '0' && key <= '9') || ['+', '-', '*', '/', '.', 'Enter'].includes(key)) {
                 e.preventDefault();
                 handleInput(key === 'Enter' ? '=' : key);
-            } else if (key === 'Backspace') { 
+            } 
+            // NEW ADDITION: Listen for 'a' through 'o' letters in Music mode
+            else if (state.isMusic && (lowerKey >= 'a' && lowerKey <= 'o')) {
+                e.preventDefault();
+                handleInput(lowerKey); // Pass the raw letter directly!
+            } 
+            else if (key === 'Backspace') { 
                 e.preventDefault();
                 undoLast(); 
             }
