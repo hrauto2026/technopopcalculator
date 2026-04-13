@@ -1,2 +1,2 @@
 # technopopcalculator
-A neon-infused, browser-based tribute to the golden era of pocket synthesizers. Features a dual-mode interface (Calculation/Music), sequence recording with "M" memory, and a "Special Key" performing Kraftwerk’s Pocket Calculator. Visuals feature shocking green "sparkle" feedback and a custom LCD ticker. 🎹⚡️
+A neon-infused, browser-based tribute to the golden era of pocket synthesizers. Features a dual-mode interface (Calculation/Music), sequence recording with a 1,500-note memory, and a custom 'Special Key' performance. Now upgraded with a programmable speed engine (up to 4x) and instant-share URLs to export your compositions. Experience the 'sparkle' feedback and the warmth of retro digital synthesis. 🎹⚡️✨
